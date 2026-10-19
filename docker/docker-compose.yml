@@ -1,0 +1,31 @@
+# Runs the registry image — CI (.gitlab/ci/build.yml) builds and pushes $CI_REGISTRY_IMAGE:latest
+# from the default branch. Ports and paths are baked into the image (docker/Dockerfile ENV) — set
+# only what differs for this deployment. Behind a reverse proxy on the same host, bind loopback:
+# "127.0.0.1:12550:12550".
+services:
+
+  leicraft-client-api:
+    image: gcr.leicraftmc.de/leicraftmc/leicraftclient/api-server:latest
+    container_name: leicraft-client-api
+    restart: unless-stopped
+    ports:
+      - "12550:12550"
+    environment:
+      LCC_LOG_LEVEL: info
+
+      LCC_APP_URL: https://client.leicraftmc.de
+      LCC_API_PUBLIC_URL: https://api.client.leicraftmc.de
+      LCC_API_TRUST_PROXY: true
+
+      LCC_API_DISABLE_DOCS: false
+
+      LCC_DISCORD_CLIENT_ID: "YourDiscordClientIDHere"
+      LCC_DISCORD_CLIENT_SECRET: "YourDiscordClientSecretHere"
+      LCC_DISCORD_GUILD_ID: "YourDiscordGuildIDHere"
+      LCC_DISCORD_BOT_TOKEN: "YourDiscordBotTokenHere"
+
+      LCC_ADMIN_DISCORD_IDS: "YourDiscordUserIDHere"
+
+    volumes:
+      - /opt/leicraftmc/leicraft-client-api/data:/opt/leicraftmc/leicraft-client-api/data
+      - /opt/leicraftmc/leicraft-client-api/config:/opt/leicraftmc/leicraft-client-api/config

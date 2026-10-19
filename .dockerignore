@@ -1,0 +1,9 @@
+node_modules
+.git
+data
+config
+tmp-data-*
+coverage
+junit.xml
+.env
+.env.*
