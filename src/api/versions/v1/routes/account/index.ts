@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { validator as zValidator } from "hono-openapi";
 import { DB } from "../../../../../db";
 import { type DrizzleDB } from "../../../../../db/utils";
 import { Logger } from "../../../../../utils/logger";
@@ -7,6 +8,7 @@ import { AuthHandler } from "../../../../utils/authHandler";
 import { DiscordOAuth } from "../../../../utils/discord";
 import { APIResponseSpec, APIRouteSpec } from "../../../../utils/specHelpers";
 import { UserHandler } from "../../../../utils/users";
+import { WardrobeHandler } from "../../../../utils/wardrobe";
 import { DOCS_TAGS } from "../../docs";
 import { AccountModel } from "./model";
 
@@ -86,6 +88,34 @@ router.delete(
 			Logger.error("Failed to delete account", error.stack || error.message || error);
 			return APIResponse.serverError(c, "Failed to delete account");
 		}
+	},
+);
+
+router.get(
+	"/wardrobe",
+
+	APIRouteSpec.authenticated({
+		summary: "List equippable items",
+		description:
+			"Everything the user can equip right now: public free products that are listed, plus the exclusive products they own. Owned items come first.",
+		tags: [DOCS_TAGS.ACCOUNT_INVENTORY],
+
+		responses: APIResponseSpec.describeWithWrongInputs(
+			APIResponseSpec.success("Wardrobe retrieved successfully", AccountModel.Wardrobe.Response),
+		),
+	}),
+
+	zValidator("query", AccountModel.Wardrobe.Query),
+
+	async (c) => {
+		const authContext = AuthHandler.AuthContext.getAsSession(c);
+		const query = c.req.valid("query") as AccountModel.Wardrobe.Query;
+
+		return APIResponse.success(
+			c,
+			"Wardrobe retrieved successfully",
+			await WardrobeHandler.list(authContext.user_id, query),
+		);
 	},
 );
 

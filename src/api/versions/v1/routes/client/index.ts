@@ -14,6 +14,7 @@ import { MojangSessionService } from "../../../../utils/mojang";
 import { RateLimiter, RequestUtils } from "../../../../utils/rateLimiter";
 import { APIResponseSpec, APIRouteSpec } from "../../../../utils/specHelpers";
 import { UserHandler } from "../../../../utils/users";
+import { WardrobeHandler } from "../../../../utils/wardrobe";
 import { DOCS_TAGS } from "../../docs";
 import { AccountMinecraftModel } from "../account/minecraft/model";
 import { ClientModel } from "./model";
@@ -311,6 +312,42 @@ router.delete(
 		});
 
 		return APIResponse.successNoData(c, "Minecraft account unlinked successfully");
+	},
+);
+
+router.get(
+	"/wardrobe",
+
+	APIRouteSpec.authenticated({
+		summary: "List equippable items",
+		description:
+			"For the in-game wardrobe: everything the linked user can equip — public free products that are listed, plus the exclusive products they own (owned first). Needs a linked account.",
+		tags: [DOCS_TAGS.CLIENT],
+
+		responses: APIResponseSpec.describeWithWrongInputs(
+			APIResponseSpec.success("Wardrobe retrieved successfully", ClientModel.Wardrobe.Response),
+			APIResponseSpec.badRequest(
+				"This Minecraft account is not linked / Syntax or validation error in request",
+			),
+			APIResponseSpec.unauthorized("This endpoint requires a client session"),
+		),
+	}),
+
+	zValidator("query", ClientModel.Wardrobe.Query),
+
+	async (c) => {
+		const account = c.get("minecraftAccount");
+		if (account.user_id === null) {
+			return APIResponse.badRequest(c, "This Minecraft account is not linked");
+		}
+
+		const query = c.req.valid("query") as ClientModel.Wardrobe.Query;
+
+		return APIResponse.success(
+			c,
+			"Wardrobe retrieved successfully",
+			await WardrobeHandler.list(account.user_id, query),
+		);
 	},
 );
 

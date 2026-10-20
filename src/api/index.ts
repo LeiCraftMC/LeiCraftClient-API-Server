@@ -9,6 +9,8 @@ import { Logger } from "../utils/logger";
 import { APIResponse } from "./utils/api-res";
 import type { APIVersionRouter } from "./utils/apiVersionRouter";
 import { AssetStore } from "./utils/assets";
+import { MinecraftAccountHandler } from "./utils/minecraftAccounts";
+import { SkinProxy } from "./utils/skins";
 import { APIv1Router } from "./versions/v1";
 
 export class API {
@@ -59,11 +61,13 @@ export class API {
 			maxAge: 600,
 			credentials: true,
 		});
-		// Assets are public files any site may embed (e.g. the SkinViewerJS product viewer).
+		// Assets and skins are public files any site may embed (e.g. the SkinViewerJS product viewer).
 		const assetsCors = cors({ origin: "*", allowMethods: ["GET", "HEAD", "OPTIONS"], maxAge: 86400 });
 
 		this.app.use("*", async (c, next) => {
-			return c.req.path.startsWith("/assets/") ? assetsCors(c, next) : frontendCors(c, next);
+			return c.req.path.startsWith("/assets/") || c.req.path.startsWith("/skins/")
+				? assetsCors(c, next)
+				: frontendCors(c, next);
 		});
 
 		this.app.onError((err, c) => {
@@ -127,6 +131,29 @@ export class API {
 			return c.body(await file.arrayBuffer(), 200, {
 				...headers,
 				"Content-Type": asset.mime_type,
+			});
+		});
+
+		// Minecraft skins of accounts that verified through the mod, for the website's 3D viewer.
+		// Proxied from Mojang's texture server (which sends no CORS headers).
+		this.app.get("/skins/:file", async (c) => {
+			const match = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.png$/.exec(
+				c.req.param("file").toLowerCase(),
+			);
+			if (!match) {
+				return APIResponse.notFound(c, "Skin not found");
+			}
+
+			const account = await MinecraftAccountHandler.getByUUID(match[1] as string);
+			const skin = account?.skin_url ? await SkinProxy.get(account.skin_url) : null;
+			if (!skin) {
+				return APIResponse.notFound(c, "Skin not found");
+			}
+
+			return c.body(skin.slice().buffer, 200, {
+				"Content-Type": "image/png",
+				"Cache-Control": "public, max-age=3600",
+				"X-Content-Type-Options": "nosniff",
 			});
 		});
 

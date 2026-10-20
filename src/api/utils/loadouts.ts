@@ -271,6 +271,7 @@ export class LoadoutHandler {
 			const profile: SharedViews.PlayerProfile = {
 				uuid: account.uuid,
 				name: account.name,
+				skin_model: account.skin_model,
 				uses_client: MinecraftAccountHandler.usesClient(account),
 				cape: null,
 				cosmetics: [],

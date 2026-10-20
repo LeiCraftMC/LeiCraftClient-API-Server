@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { MinecraftDataPolicies } from "../../../../utils/shared-models/accountData";
 import { SharedViews } from "../../../../utils/shared-models/views";
+import { WardrobeHandler } from "../../../../utils/wardrobe";
 
 export namespace ClientModel.Challenge {
 	export const Response = z.object({
@@ -59,5 +60,13 @@ export namespace ClientModel.CreateLink {
 		url: z.string().describe("Open this in the browser (clickable link in the mod)"),
 		expires_at: z.number().int(),
 	});
+	export type Response = z.infer<typeof Response>;
+}
+
+export namespace ClientModel.Wardrobe {
+	export const Query = WardrobeHandler.Query;
+	export type Query = z.infer<typeof Query>;
+
+	export const Response = z.array(SharedViews.WardrobeItem);
 	export type Response = z.infer<typeof Response>;
 }

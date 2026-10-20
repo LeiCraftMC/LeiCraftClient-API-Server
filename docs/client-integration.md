@@ -72,18 +72,27 @@ POST /v1/players/lookup  { uuids: [...], names: [...] }    (≤ 100 players per 
   "has a cape" heuristic of `LeiCraftUsers`.
 
 Single lookups exist for the website: `GET /v1/players/{uuid}`, `GET /v1/players/by-name/{name}`
-(404 when unknown).
+(404 when unknown). Skins of known accounts are served with CORS at `/skins/<uuid>.png`.
 
-## 4. Own loadout (optional in-game wardrobe)
+## 4. In-game wardrobe
 
 ```
+GET /v1/client/wardrobe?type=cape|cosmetic&search=&owned_only=true&limit=50&offset=0
+  → [ { product: { id, type, name, description, availability, texture, preview, variants, … },
+        page: { id, category, slug, name }, owned } ]
+
 GET /v1/client/loadout
+  → { cape: Product | null, cosmetics: [ { product: Product, variant_id } ] }
+
 PUT /v1/client/loadout  { cape_product_id: number | null,
                           cosmetics: [ { product_id, variant_id?: number | null } ] }   (≤ 10)
 ```
 
-Needs a linked account. Products must be published; exclusive ones must be owned by the linked
-user (`403` otherwise). The browsable shop is the public `/v1/catalog/*`.
+All three need a linked account (`400` otherwise). The wardrobe lists everything the linked user
+can equip: public free products that are listed, plus the exclusive products they own (owned
+first). `PUT /loadout` replaces the whole loadout; products must be published and exclusive ones
+owned (`403` otherwise). After saving, re-fetch the own profile (section 3) so the change shows
+in the game. The browsable shop is the public `/v1/catalog/*`.
 
 ## V1 → V2 mapping
 

@@ -112,12 +112,32 @@ export namespace SharedViews {
 	export const MinecraftAccount = z.object({
 		uuid: z.string(),
 		name: z.string(),
-		skin_url: z.string().nullable(),
+		skin_url: z
+			.string()
+			.nullable()
+			.describe(
+				"Mojang texture URL. Browsers load the skin through `<API>/skins/<uuid>.png` (with CORS).",
+			),
 		skin_model: MinecraftDataPolicies.SkinModel,
 		uses_client: z.boolean().describe("Used the LeiCraft Client within the last 30 days"),
 		linked_at: z.number().int().nullable(),
 	});
 	export type MinecraftAccount = z.infer<typeof MinecraftAccount>;
+
+	/** Something the user can equip right now (wardrobe listing). */
+	export const WardrobeItem = z.object({
+		product: Product,
+		page: z.object({
+			id: z.number().int(),
+			category: CatalogSettings.Category,
+			slug: z.string(),
+			name: z.string(),
+		}),
+		owned: z
+			.boolean()
+			.describe("Exclusive product the user owns (free products are usable without owning them)"),
+	});
+	export type WardrobeItem = z.infer<typeof WardrobeItem>;
 
 	/** What a Minecraft account has equipped (owner view). */
 	export const Loadout = z.object({
@@ -144,6 +164,9 @@ export namespace SharedViews {
 	export const PlayerProfile = z.object({
 		uuid: z.string(),
 		name: z.string(),
+		skin_model: MinecraftDataPolicies.SkinModel.describe(
+			"Skin model from the last mod handshake — renderers that know the live skin should use that",
+		),
 		uses_client: z.boolean().describe("Used the LeiCraft Client within the last 30 days"),
 		cape: z
 			.object({
