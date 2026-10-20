@@ -16,7 +16,7 @@ This is a backend service, so it ships no MCP config.
 
 ## Working here
 
-- Port 12550 is used by `bun run dev` **and** by the test preload (`API.start(12550)`) — stop a
+- Port 12331 is used by `bun run dev` **and** by the test preload (`API.start(12331)`) — stop a
   running dev server before `bun test`.
 - After changing `src/db/schema.ts`, run `bun run db:generate` and commit the new migration.
 - Git checkouts on Windows: `.gitattributes` forces LF; Biome fails on CRLF files.

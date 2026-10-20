@@ -26,7 +26,7 @@ describe("Discord login", () => {
 		expect(url.origin + url.pathname).toBe("https://discord.com/oauth2/authorize");
 		expect(url.searchParams.get("scope")).toBe("identify guilds.join");
 		expect(url.searchParams.get("response_type")).toBe("code");
-		expect(url.searchParams.get("redirect_uri")).toBe("http://localhost:12560/auth/discord/callback");
+		expect(url.searchParams.get("redirect_uri")).toBe("http://localhost:12332/auth/discord/callback");
 		expect(url.searchParams.get("state")).toBe(data.state);
 
 		// the state is stored hashed

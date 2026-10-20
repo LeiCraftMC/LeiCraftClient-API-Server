@@ -14,7 +14,7 @@ function setTestEnv(rootDir: string) {
 		LCC_LOG_LEVEL: "debug",
 
 		LCC_API_HOST: "::",
-		LCC_API_PORT: 12550,
+		LCC_API_PORT: 12331,
 		LCC_API_DISABLE_DOCS: false,
 
 		LCC_DB_PATH: path.join(rootDir, "db.sqlite"),
@@ -24,16 +24,16 @@ function setTestEnv(rootDir: string) {
 		LCC_LOG_DIR: path.join(rootDir, "logs"),
 		LCC_CONFIG_BASE_DIR: rootDir,
 
-		LCC_APP_URL: "http://localhost:12560",
+		LCC_APP_URL: "http://localhost:12332",
 
-		LCC_API_PUBLIC_URL: "http://localhost:12550",
+		LCC_API_PUBLIC_URL: "http://localhost:12331",
 		LCC_API_TRUST_PROXY: false,
 
 		LCC_ASSETS_DIR: path.join(rootDir, "assets"),
 
 		LCC_DISCORD_CLIENT_ID: "100000000000000001",
 		LCC_DISCORD_CLIENT_SECRET: "test-client-secret",
-		LCC_DISCORD_REDIRECT_URI: "http://localhost:12560/auth/discord/callback",
+		LCC_DISCORD_REDIRECT_URI: "http://localhost:12332/auth/discord/callback",
 		LCC_DISCORD_GUILD_ID: "100000000000000002",
 		LCC_DISCORD_BOT_TOKEN: "test-bot-token",
 
@@ -93,7 +93,7 @@ beforeAll(async () => {
 
 	await API.init([config.APP_URL], false);
 
-	await API.start(12550, "::");
+	await API.start(12331, "::");
 });
 
 afterAll(async () => {

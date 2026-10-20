@@ -50,7 +50,7 @@ describe("Asset uploads", () => {
 		const { asset, warnings } = await uploadAsset(user.token, "cape_texture", bytes);
 
 		expect(asset.id).toBe(new Bun.CryptoHasher("sha256").update(bytes).digest("hex"));
-		expect(asset.url).toBe(`http://localhost:12550/assets/${asset.id}.png`);
+		expect(asset.url).toBe(`http://localhost:12331/assets/${asset.id}.png`);
 		expect(asset.width).toBe(512);
 		expect(asset.height).toBe(256);
 		expect(warnings).toEqual([]);

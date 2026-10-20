@@ -122,7 +122,7 @@ export class ConfigHandler {
 		LOG_LEVEL: CS.enum(["debug", "info", "warn", "error", "critical"]).default("info"),
 
 		API_HOST: CS.string().default("::"),
-		API_PORT: CS.number().default(12550),
+		API_PORT: CS.number().default(12331),
 		API_DISABLE_DOCS: CS.boolean().default(false),
 
 		DB_PATH: CS.string().default("./data/db.sqlite"),

@@ -5,7 +5,7 @@ export namespace AppConstants {
 
 	export const APP_KEYS_PREFIX = "lcc";
 
-	export const APP_API_DEFAULT_PORT = 12550;
+	export const APP_API_DEFAULT_PORT = 12331;
 
 	export const APP_API_DEFAULT_PROD_URL = "https://api.client.leicraftmc.de";
 

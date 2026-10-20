@@ -108,7 +108,7 @@ describe("Linking a Minecraft account through the mod's link", () => {
 			expectedBodySchema: ClientModel.CreateLink.Response,
 		});
 		expect(link.url).toBe(
-			`http://localhost:12560/link/minecraft?code=${encodeURIComponent(link.code)}`,
+			`http://localhost:12332/link/minecraft?code=${encodeURIComponent(link.code)}`,
 		);
 
 		const pending = await makeAPIRequest("/v1/client/link", {
@@ -282,7 +282,7 @@ describe("Loadouts and player profiles", () => {
 		});
 		expect(profile.cape?.product_id).toBe(cape.product.id);
 		expect(profile.cape?.texture.url).toMatch(
-			/^http:\/\/localhost:12550\/assets\/[0-9a-f]{64}\.png$/,
+			/^http:\/\/localhost:12331\/assets\/[0-9a-f]{64}\.png$/,
 		);
 		expect(profile.cosmetics[0]?.variants[0]?.model.url).toMatch(/\.json$/);
 		expect(profile.cosmetics[0]?.variants[0]?.skin_model).toBe("any");

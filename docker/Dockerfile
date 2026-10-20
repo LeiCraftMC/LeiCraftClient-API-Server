@@ -10,33 +10,33 @@ FROM debian:stable-slim
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates openssl \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/leicraftmc/leicraft-client-api
+WORKDIR /opt/leicraftmc/leicraft-client/api
 
-COPY ./build/bin/leicraft-client-api-linux-x64-baseline /opt/leicraftmc/leicraft-client-api/app/leicraft-client-api
+COPY ./build/bin/leicraft-client-api-linux-x64-baseline /opt/leicraftmc/leicraft-client/api/app/leicraft-client-api
 # migrations are embedded in the binary, we do not need to copy them
 
-RUN chmod u+x /opt/leicraftmc/leicraft-client-api/app/leicraft-client-api
+RUN chmod u+x /opt/leicraftmc/leicraft-client/api/app/leicraft-client-api
 
-EXPOSE 12550/tcp
+EXPOSE 12331/tcp
 
 ENV NODE_ENV=production
 
 ENV LCC_API_HOST=::
-ENV LCC_API_PORT=12550
+ENV LCC_API_PORT=12331
 
-ENV LCC_DB_PATH=/opt/leicraftmc/leicraft-client-api/data/db.sqlite
+ENV LCC_DB_PATH=/opt/leicraftmc/leicraft-client/api/data/db.sqlite
 ENV LCC_DB_AUTO_MIGRATE=true
 # LCC_DB_MIGRATION_DIR does not need to be set, the binary embeds the migrations
 
-ENV LCC_LOG_DIR=/opt/leicraftmc/leicraft-client-api/data/logs
-ENV LCC_CONFIG_BASE_DIR=/opt/leicraftmc/leicraft-client-api/config
-ENV LCC_ASSETS_DIR=/opt/leicraftmc/leicraft-client-api/data/assets
+ENV LCC_LOG_DIR=/opt/leicraftmc/leicraft-client/api/data/logs
+ENV LCC_CONFIG_BASE_DIR=/opt/leicraftmc/leicraft-client/api/config
+ENV LCC_ASSETS_DIR=/opt/leicraftmc/leicraft-client/api/data/assets
 
 
-VOLUME /opt/leicraftmc/leicraft-client-api/data
-VOLUME /opt/leicraftmc/leicraft-client-api/config
+VOLUME /opt/leicraftmc/leicraft-client/api/data
+VOLUME /opt/leicraftmc/leicraft-client/api/config
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-	CMD curl -f http://localhost:12550/health || exit 1
+	CMD curl -f http://localhost:12331/health || exit 1
 
-ENTRYPOINT ["/opt/leicraftmc/leicraft-client-api/app/leicraft-client-api"]
+ENTRYPOINT ["/opt/leicraftmc/leicraft-client/api/app/leicraft-client-api"]

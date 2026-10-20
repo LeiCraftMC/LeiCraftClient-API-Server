@@ -26,10 +26,10 @@ bun install
 cp example.env .env
 # fill in LCC_DISCORD_CLIENT_ID / LCC_DISCORD_CLIENT_SECRET and your Discord user id in
 # LCC_ADMIN_DISCORD_IDS, then:
-bun run dev        # http://localhost:12550 → API docs at /docs/v1
+bun run dev        # http://localhost:12331 → API docs at /docs/v1
 ```
 
-Ports: the API runs on **12550**, the website on **12560** (`LCC_APP_URL`).
+Ports: the API runs on **12331**, the website on **12332** (`LCC_APP_URL`).
 
 **Discord app:** use the existing LeiCraft Client application and add the redirect URI
 `<LCC_APP_URL>/auth/discord/callback` (or set `LCC_DISCORD_REDIRECT_URI`). For the automatic

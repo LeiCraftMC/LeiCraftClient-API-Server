@@ -28,7 +28,7 @@ LeiCraftMC Style Guides: https://git.leicraftmc.de/LeiCraftMC/Style-Guides.
 
 ## Project rules
 
-- Env prefix `LCC_`, token prefix `lcc_`, port 12550 (website 12560).
+- Env prefix `LCC_`, token prefix `lcc_`, port 12331 (website 12332).
 - There are no passwords: accounts come from the Discord login; `LCC_ADMIN_DISCORD_IDS` bootstraps
   admins. Do not re-add the template's password login, reset or email modules.
 - Enums shared by schema, models and services live in
