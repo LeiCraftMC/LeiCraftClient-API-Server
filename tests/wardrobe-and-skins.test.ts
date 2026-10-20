@@ -12,7 +12,7 @@ import { seedMinecraftAccount, seedPage, seedProduct, seedUserWithSession } from
 
 describe("Wardrobe", () => {
 	test("lists free listed products and owned exclusives, owned first", async () => {
-		const page = await seedPage("official", null);
+		const page = await seedPage("partner", null);
 		const { product: free } = await seedProduct(page.id, "cape");
 		const { product: unlisted } = await seedProduct(page.id, "cape", { listed: false });
 		const { product: ownedExclusive } = await seedProduct(page.id, "cosmetic", {

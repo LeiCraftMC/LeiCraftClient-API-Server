@@ -257,7 +257,13 @@ export const pages = sqliteTable(
 		created_at: SQLUtils.getCreatedAtColumn(),
 		updated_at: SQLUtils.getCreatedAtColumn("updated_at"),
 	},
-	(table) => [uniqueIndex("pages_category_slug_unique").on(table.category, table.slug)],
+	(table) => [
+		uniqueIndex("pages_category_slug_unique").on(table.category, table.slug),
+		// the official category is one page, not a list
+		uniqueIndex("pages_single_official_unique")
+			.on(table.category)
+			.where(sql`${table.category} = 'official'`),
+	],
 );
 
 /**

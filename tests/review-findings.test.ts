@@ -109,8 +109,8 @@ describe("Ban rules", () => {
 
 describe("Exclusive files stay with their page", () => {
 	test("another page can't reuse the texture of an exclusive cape", async () => {
-		const official = await seedPage("official", null);
-		const { product: exclusive } = await seedProduct(official.id, "cape", {
+		const ownerPage = await seedPage("partner", null);
+		const { product: exclusive } = await seedProduct(ownerPage.id, "cape", {
 			availability: "exclusive",
 		});
 
@@ -148,7 +148,7 @@ describe("Exclusive files stay with their page", () => {
 		);
 
 		// the page that owns the exclusive may reuse it
-		await makeAPIRequest(`/v1/studio/pages/${official.id}/products`, {
+		await makeAPIRequest(`/v1/studio/pages/${ownerPage.id}/products`, {
 			method: "POST",
 			authToken: (await seedUserWithSession("admin")).token,
 			body: { type: "cape", name: "Variant", texture_asset_id: copy.asset.id },

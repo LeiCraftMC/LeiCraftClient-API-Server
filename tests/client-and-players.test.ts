@@ -257,7 +257,7 @@ describe("Loadouts and player profiles", () => {
 		web = await seedUserWithSession();
 		account = await seedMinecraftAccount(web.user.id, { name: "Wearer" });
 
-		const page = await seedPage("official", null);
+		const page = await seedPage("partner", null);
 		cape = await seedProduct(page.id, "cape");
 		hat = await seedProduct(page.id, "cosmetic");
 		exclusiveCape = await seedProduct(page.id, "cape", { availability: "exclusive" });

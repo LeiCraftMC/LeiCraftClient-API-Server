@@ -83,7 +83,7 @@ describe("Takedowns", () => {
 	});
 
 	test("approve and reject only apply to the review queue", async () => {
-		const page = await seedPage("official", null);
+		const page = await seedPage("partner", null);
 		const { product } = await seedProduct(page.id, "cape");
 
 		await makeAPIRequest(

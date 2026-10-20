@@ -91,7 +91,7 @@ router.get(
 	APIRouteSpec.unauthenticated({
 		summary: "List categories",
 		description:
-			"The three fixed shop categories — `official` (LeiCraft Client team), `partner` (official partner pages) and `community` (user uploads) — with their number of visible pages.",
+			"The three fixed shop categories — `official` (the single page of the LeiCraft Client team), `partner` (official partner pages) and `community` (user uploads) — with their number of visible pages and listed products.",
 		tags: [DOCS_TAGS.CATALOG],
 
 		responses: APIResponseSpec.describeBasic(
@@ -111,12 +111,22 @@ router.get(
 			.all();
 		const counts = new Map(rows.map((row) => [row.category, row.value]));
 
+		const productRows = await DB.instance()
+			.select({ category: DB.Tables.pages.category, value: count() })
+			.from(DB.Tables.products)
+			.innerJoin(DB.Tables.pages, eq(DB.Tables.pages.id, DB.Tables.products.page_id))
+			.where(listedPublicProduct())
+			.groupBy(DB.Tables.pages.category)
+			.all();
+		const productCounts = new Map(productRows.map((row) => [row.category, row.value]));
+
 		return APIResponse.success(
 			c,
 			"Categories retrieved successfully",
 			CatalogSettings.Categories.map((category) => ({
 				...CatalogViews.category(category),
 				page_count: counts.get(category) ?? 0,
+				product_count: productCounts.get(category) ?? 0,
 			})) satisfies CatalogModel.GetCategories.Response,
 		);
 	},

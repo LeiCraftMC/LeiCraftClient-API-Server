@@ -191,9 +191,28 @@ describe("Pages", () => {
 	test("slugs are unique per category", async () => {
 		const admin = await seedUserWithSession("admin");
 		const shared = slug("same");
-		await createPage(admin.token, { category: "official", slug: shared, name: "A" });
-		await createPage(admin.token, { category: "official", slug: shared, name: "B" }, 409);
-		await createPage(admin.token, { category: "partner", slug: shared, name: "C" });
+		await createPage(admin.token, { category: "partner", slug: shared, name: "A" });
+		await createPage(admin.token, { category: "partner", slug: shared, name: "B" }, 409);
+		const user = await seedUserWithSession();
+		await createPage(user.token, { category: "community", slug: shared, name: "C" });
+	});
+
+	test("there is only one official page", async () => {
+		// The only test that creates an official page — the rest use partner pages.
+		const admin = await seedUserWithSession("admin");
+		await createPage(admin.token, {
+			category: "official",
+			slug: slug("official"),
+			name: "LeiCraft Client",
+		});
+		await createPage(
+			admin.token,
+			{ category: "official", slug: slug("second"), name: "Second" },
+			409,
+		);
+
+		// also enforced by the database
+		await expect(seedPage("official", null)).rejects.toThrow();
 	});
 
 	test("pages of others are invisible in the studio", async () => {

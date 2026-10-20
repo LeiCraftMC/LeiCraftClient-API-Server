@@ -86,11 +86,11 @@ account has its own loadout** (cape + up to 10 cosmetics).
 
 ### Catalog: categories → pages → collections → products
 
-- **Categories** are fixed: `official` (LeiCraft Client team), `partner` (one page per partner),
-  `community` (one page per user).
+- **Categories** are fixed: `official` (a single page — the LeiCraft Client team's shop; the
+  database allows only one), `partner` (one page per partner), `community` (one page per user).
 - **Pages** have members (`owner`, `manager`) who manage them in the **studio** (`/v1/studio/*`).
-  Users create their own community page; admins create official and partner pages and assign
-  owners. Partners are self-service.
+  Users create their own community page; admins create the official page and partner pages and
+  assign owners. Partners are self-service.
 - **Collections** group products on a page (called *packages* in V1).
 - **Products** are capes (one 2:1 PNG texture) or cosmetics (OptiFine *PlayerItem* models as
   exported by Blockbench). Cosmetics have **variants** — model + texture per skin model

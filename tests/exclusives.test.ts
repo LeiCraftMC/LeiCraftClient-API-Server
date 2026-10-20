@@ -197,7 +197,7 @@ describe("Direct grants", () => {
 
 	beforeAll(async () => {
 		partner = await seedUserWithSession();
-		const page = await seedPage("official", partner.user.id);
+		const page = await seedPage("partner", partner.user.id);
 		pageID = page.id;
 		exclusiveCape = await seedProduct(pageID, "cape", { availability: "exclusive" });
 	});

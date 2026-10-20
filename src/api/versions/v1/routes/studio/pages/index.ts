@@ -117,7 +117,7 @@ router.post(
 	APIRouteSpec.authenticated({
 		summary: "Create a page",
 		description:
-			"Users create their own `community` page (one per user) to upload capes and cosmetics. Admins create `official` and `partner` pages and can assign an owner, who then manages the page and its members.",
+			"Users create their own `community` page (one per user) to upload capes and cosmetics. Admins create `partner` pages and the single `official` page (the LeiCraft Client team's shop — there is only one) and can assign an owner, who then manages the page and its members.",
 		tags: [DOCS_TAGS.STUDIO.PAGES],
 
 		responses: APIResponseSpec.describeBasic(
@@ -125,7 +125,9 @@ router.post(
 			APIResponseSpec.badRequest("Syntax or validation error in request"),
 			APIResponseSpec.forbidden("Only admins can create official and partner pages"),
 			APIResponseSpec.notFound("Owner user not found"),
-			APIResponseSpec.conflict("Slug already in use / You already have a community page"),
+			APIResponseSpec.conflict(
+				"Slug already in use / You already have a community page / There is already an official page",
+			),
 		),
 	}),
 
@@ -175,6 +177,18 @@ router.post(
 						? "You already have a community page"
 						: "This user already has a community page",
 				);
+			}
+		}
+
+		// The official category is a single page (the LeiCraft Client team's shop), not a list.
+		if (body.category === "official") {
+			const official = await DB.instance()
+				.select({ id: DB.Tables.pages.id })
+				.from(DB.Tables.pages)
+				.where(eq(DB.Tables.pages.category, "official"))
+				.get();
+			if (official) {
+				return APIResponse.conflict(c, "There is already an official page");
 			}
 		}
 

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `pages_single_official_unique` ON `pages` (`category`) WHERE "pages"."category" = 'official';

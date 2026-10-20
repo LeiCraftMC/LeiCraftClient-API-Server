@@ -10,7 +10,7 @@ describe("Maintenance", () => {
 		const orphan = await seedAsset("image", 201);
 		const fresh = await seedAsset("image", 202);
 
-		const page = await seedPage("official", null);
+		const page = await seedPage("partner", null);
 		const { product } = await seedProduct(page.id, "cape");
 		const referenced = product.texture_asset_id as string;
 

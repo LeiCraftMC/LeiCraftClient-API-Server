@@ -30,6 +30,7 @@ export namespace CatalogModel.GetCategories {
 	export const Response = z.array(
 		SharedViews.Category.extend({
 			page_count: z.number().int(),
+			product_count: z.number().int().describe("Listed, published products of the category"),
 		}),
 	);
 	export type Response = z.infer<typeof Response>;
