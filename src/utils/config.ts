@@ -167,7 +167,7 @@ export class ConfigHandler {
 
 		// Modrinth auto-publish of released jars; optional — publishing fails when unset
 		MODRINTH_URL: CS.string().default("https://api.modrinth.com/v2"),
-		// Project id or slug of the LeiCraft Client project
+		// Project id (not the slug — creating versions needs the id) of the LeiCraft Client project
 		MODRINTH_PROJECT_ID: CS.string().default("wH9eagDm"),
 		// Modrinth token created on the project's page (scoped to that project); server-side only
 		MODRINTH_TOKEN: CS.string().optional(),

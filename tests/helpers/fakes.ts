@@ -208,19 +208,29 @@ export namespace FakeGitLab {
 
 /**
  * In-memory stand-in for Modrinth (`LCC_MODRINTH_URL=https://modrinth.test/v2`): records what the
- * API publishes. It also answers the jar downloads from GitLab's package registry, because the
- * real API downloads the jar before uploading it.
+ * API publishes and rejects what the real API rejects — a file part missing from `file_parts`, or
+ * the same jar uploaded twice. It also answers the jar downloads from GitLab's package registry,
+ * because the real API downloads the jar before uploading it.
  */
 export class FakeModrinth {
-	/** `POST /version` publishes the API made. */
+	/** `POST /version` publishes the API made that Modrinth accepted. */
 	static readonly published: ModrinthPublish[] = [];
 
-	/** Next publish attempts fail with this error (e.g. `"Version number already exists"`). */
+	/** The next publish attempt fails with a validation error. */
 	static failNext: string | null = null;
+
+	/** The next publish is accepted, but its response never reaches the API (network error). */
+	static dropNextResponse = false;
 
 	static reset() {
 		this.published.length = 0;
 		this.failNext = null;
+		this.dropNextResponse = false;
+	}
+
+	/** A version object, trimmed to what the API reads — like the real one, without a web URL. */
+	protected static version(projectID: string, versionNumber: string) {
+		return { id: `modrinth-${versionNumber}`, project_id: projectID, version_number: versionNumber };
 	}
 
 	static readonly fetcher: ModrinthAPI.Fetcher = async (input, init) => {
@@ -231,11 +241,12 @@ export class FakeModrinth {
 			return new Response(new Uint8Array([0x50, 0x4b, 0x03, 0x04]), { status: 200 });
 		}
 
-		// the real API sends multipart form data: `data` (JSON) and the jar as `file`
+		// the real API sends multipart form data: `data` (JSON) plus the file parts it lists in
+		// `data.file_parts`
 		if (url.pathname.endsWith("/version") && init?.method === "POST") {
 			if (FakeModrinth.failNext) {
 				FakeModrinth.failNext = null;
-				return json({ error: "Simulated Modrinth failure" }, 400);
+				return json({ error: "invalid_input", description: "Simulated Modrinth failure" }, 400);
 			}
 
 			const form = await new Request("https://modrinth.test/", {
@@ -244,34 +255,68 @@ export class FakeModrinth {
 				headers: init.headers as any,
 			}).formData();
 			const data = JSON.parse(String(form.get("data")));
-			const filename = (form.get("file") as File | null)?.name ?? "";
-			FakeModrinth.published.push({ ...data, filename });
 
-			return json({
-				id: `modrinth-${data.version_number}`,
-				page_url: `https://modrinth.com/version/${data.version_number}`,
-			});
+			const fileParts = [...form.keys()].filter((key) => key !== "data");
+			const listed: unknown = data.file_parts;
+			if (
+				fileParts.length === 0 ||
+				!Array.isArray(listed) ||
+				fileParts.some((part) => !listed.includes(part))
+			) {
+				return json(
+					{ error: "invalid_input", description: "Each file part must be listed in file_parts" },
+					400,
+				);
+			}
+
+			// Modrinth refuses a file it has already (by hash); the fake's jars are all the same
+			// bytes, so it goes by the version number instead
+			if (FakeModrinth.published.some((publish) => publish.version_number === data.version_number)) {
+				return json(
+					{
+						error: "invalid_input",
+						description: "Duplicate files are not allowed to be uploaded to Modrinth!",
+					},
+					400,
+				);
+			}
+
+			const filename = (form.get(fileParts[0] as string) as File).name;
+			const userAgent = new Headers(init.headers).get("User-Agent");
+			FakeModrinth.published.push({ ...data, filename, user_agent: userAgent });
+
+			if (FakeModrinth.dropNextResponse) {
+				FakeModrinth.dropNextResponse = false;
+				throw new TypeError("fetch failed");
+			}
+			return json(FakeModrinth.version(data.project_id, data.version_number));
 		}
 
-		if (url.pathname.endsWith("/project/leicraftclient/version")) {
-			const number = url.searchParams.get("number");
+		// `GET /project/<id>/version/<id or number>`
+		const lookup = url.pathname.match(/\/project\/([^/]+)\/version\/([^/]+)$/);
+		if (lookup && (init?.method ?? "GET") === "GET") {
+			const number = decodeURIComponent(lookup[2] as string);
 			const existing = FakeModrinth.published.find((publish) => publish.version_number === number);
 			return existing
-				? json([{ id: `modrinth-${number}`, page_url: `https://modrinth.com/version/${number}` }])
-				: json([]);
+				? json(FakeModrinth.version(existing.project_id, number))
+				: json({ error: "not_found", description: "the requested route does not exist" }, 404);
 		}
 
-		return json({ error: "not found" }, 404);
+		return json({ error: "not_found", description: "the requested route does not exist" }, 404);
 	};
 }
 
 interface ModrinthPublish {
+	project_id: string;
 	version_number: string;
 	name: string;
-	version_body: string;
+	changelog: string;
 	version_type: string;
 	game_versions: string[];
+	file_parts: string[];
+	primary_file: string;
 	filename: string;
+	user_agent: string | null;
 	[key: string]: unknown;
 }
 

@@ -1,5 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, test } from "bun:test";
 import { eq } from "drizzle-orm";
+import { ModrinthAPI } from "../src/api/utils/modrinth";
 import { ReleaseHandler } from "../src/api/utils/releases";
 import { DB } from "../src/db";
 import { makeAPIRequest } from "./helpers/api";
@@ -96,7 +97,7 @@ describe("Releases", () => {
 			channel: "stable",
 			download_url: FakeGitLab.jarURL("3.0.0"),
 			page_url: "http://localhost:12332/download#v3.0.0",
-			modrinth_url: "https://modrinth.com/version/3.0.0",
+			modrinth_url: "https://modrinth.com/mod/leicraftclient/version/modrinth-3.0.0",
 		});
 
 		const latest = await makeAPIRequest("/v1/releases/latest", {}, 200);
@@ -110,10 +111,14 @@ describe("Releases", () => {
 		expect(FakeModrinth.published[0]).toMatchObject({
 			version_number: "3.0.0",
 			version_type: "release",
-			version_body: changelog,
+			changelog,
 			game_versions: ["26.3"],
+			file_parts: ["file"],
+			primary_file: "file",
 			filename: "leicraftclient-3.0.0.jar",
 		});
+		// Modrinth asks for a User-Agent that names the app
+		expect(FakeModrinth.published[0]?.user_agent).toBe(ModrinthAPI.USER_AGENT);
 
 		const managed = await makeAPIRequest("/v1/admin/releases/3.0.0", { authToken: admin.token }, 200);
 		expect(managed).toMatchObject({
@@ -288,6 +293,28 @@ describe("Releases", () => {
 
 		const done = await makeAPIRequest("/v1/admin/releases/3.2.0", { authToken: admin.token }, 200);
 		expect(done.modrinth_state).toBe("published");
+		expect(FakeModrinth.published).toHaveLength(1);
+	});
+
+	test("a Modrinth upload whose response got lost resolves to the uploaded version", async () => {
+		FakeModrinth.dropNextResponse = true;
+		await publish({ mode: "gitlab_new", version: "3.7.0", changelog: "flaky network" }, admin.token);
+		finishBuild("3.7.0");
+		await ReleaseHandler.syncPending();
+
+		// the jar landed on Modrinth, but the API never heard back: still pending for the next sync
+		const waiting = await makeAPIRequest("/v1/admin/releases/3.7.0", { authToken: admin.token }, 200);
+		expect(waiting).toMatchObject({ status: "published", modrinth_state: "pending" });
+		expect(FakeModrinth.published).toHaveLength(1);
+
+		// the next upload is refused as a duplicate and resolves to the version already there
+		await ReleaseHandler.syncPending();
+		const done = await makeAPIRequest("/v1/admin/releases/3.7.0", { authToken: admin.token }, 200);
+		expect(done).toMatchObject({
+			modrinth_state: "published",
+			modrinth_url: "https://modrinth.com/mod/leicraftclient/version/modrinth-3.7.0",
+			modrinth_error: null,
+		});
 		expect(FakeModrinth.published).toHaveLength(1);
 	});
 
