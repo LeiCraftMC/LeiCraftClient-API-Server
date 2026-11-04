@@ -13,6 +13,7 @@ import {
 	CatalogSettings,
 	ModerationSettings,
 } from "../api/utils/shared-models/catalogData";
+import { ReleaseSettings } from "../api/utils/shared-models/releaseData";
 import { SQLUtils } from "./utils";
 
 // ─── Accounts & authentication ──────────────────────────────────────────────────────────────
@@ -563,6 +564,47 @@ export const auditLogs = sqliteTable(
 		index("audit_logs_actor_idx").on(table.actor_user_id),
 		index("audit_logs_target_idx").on(table.target_type, table.target_id),
 	],
+);
+
+// ─── Mod releases ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * A release of the LeiCraft Client Fabric mod, created on the admin dashboard: either a new GitLab
+ * release was triggered (tag + build pipeline attach the jar asset) or an existing GitLab release
+ * was imported. `download_url` is set once the pipeline finished and the jar asset link appeared;
+ * only then the release is `published` and served publicly. The Modrinth auto-publish is tracked
+ * separately (`modrinth_state`) — it may fail while the release itself is published.
+ *
+ * @deprecated Use DB.Tables.releases to access this table.
+ */
+export const releases = sqliteTable(
+	"releases",
+	{
+		id: SQLUtils.primaryKeyIntAutoIncrement("id"),
+
+		// mod version without the leading "v" of the GitLab tag, e.g. "2.0.0-pre.5"
+		version: text().notNull().unique(),
+		title: text().notNull(),
+		changelog: text().notNull(),
+
+		status: text({ enum: ReleaseSettings.Statuses }).notNull().default("pending"),
+		// GitLab package registry permalink of the jar, set once the build finished
+		download_url: text(),
+		// pipeline of the tag build (why it failed, build logs)
+		pipeline_url: text(),
+		// why the release failed (pipeline failed or the build never finished)
+		error_message: text(),
+
+		// independent of the build: skipped when auto-publish was not requested
+		modrinth_state: text({ enum: ReleaseSettings.ModrinthStates }).notNull().default("skipped"),
+		modrinth_url: text(),
+		modrinth_error: text(),
+
+		published_at: integer(),
+		created_by_user_id: integer().references(() => users.id, { onDelete: "set null" }),
+		created_at: SQLUtils.getCreatedAtColumn(),
+	},
+	(table) => [index("releases_status_idx").on(table.status)],
 );
 
 // ─── Runtime metadata ───────────────────────────────────────────────────────────────────────

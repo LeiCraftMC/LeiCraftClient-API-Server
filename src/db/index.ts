@@ -100,6 +100,8 @@ export namespace DB.Tables {
 	export const reports = TableSchema.reports;
 	export const auditLogs = TableSchema.auditLogs;
 
+	export const releases = TableSchema.releases;
+
 	export const metadata = TableSchema.metadata;
 }
 
@@ -132,6 +134,8 @@ export namespace DB.Models {
 
 	export type Report = typeof DB.Tables.reports.$inferSelect;
 	export type AuditLog = typeof DB.Tables.auditLogs.$inferSelect;
+
+	export type Release = typeof DB.Tables.releases.$inferSelect;
 
 	export type Metadata = typeof DB.Tables.metadata.$inferSelect;
 }

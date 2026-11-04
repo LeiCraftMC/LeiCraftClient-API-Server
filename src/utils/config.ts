@@ -154,6 +154,21 @@ export class ConfigHandler {
 		ADMIN_DISCORD_IDS: CS.array().default([]),
 
 		MOJANG_SESSION_SERVER_URL: CS.string().default("https://sessionserver.mojang.com"),
+
+		// The GitLab the mod's releases are built on (Releases API). A token is only needed for
+		// creating/importing releases; the public endpoints work without one.
+		GITLAB_API_BASE_URL: CS.string().default("https://git.leicraftmc.de/api/v4"),
+		// Numeric id or URL-encoded path of the LeiCraftClient/Fabric project
+		GITLAB_PROJECT_ID: CS.string().default("79"),
+		// Personal access token with fine-grained scopes (see example.env); never sent to clients
+		GITLAB_TOKEN: CS.string().optional(),
+
+		// Modrinth auto-publish of released jars; optional — publishing fails when unset
+		MODRINTH_URL: CS.string().default("https://api.modrinth.com/v2"),
+		// Project id or slug of the LeiCraft Client project
+		MODRINTH_PROJECT_ID: CS.string().default("leicraftclient"),
+		// Modrinth token created on the project's page (scoped to that project); server-side only
+		MODRINTH_TOKEN: CS.string().optional(),
 	});
 
 	private static config: ParsedConfig | null = null;

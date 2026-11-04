@@ -161,6 +161,12 @@ export class APIResponseSpec {
 		return this.genericError(409, message);
 	}
 
+	static serviceUnavailable(
+		message = "Service Unavailable: The server is not configured for this operation",
+	) {
+		return this.genericError(503, message);
+	}
+
 	static tooManyRequests(
 		message = "Too Many Requests: You have sent too many requests in a given amount of time",
 	) {
@@ -184,5 +190,5 @@ export namespace APIResponseSpec.Types {
 		responses: DescribeRouteOptions["responses"];
 	};
 
-	export type HTTP_ERROR_CODES = 400 | 401 | 403 | 404 | 409 | 429 | 500;
+	export type HTTP_ERROR_CODES = 400 | 401 | 403 | 404 | 409 | 429 | 500 | 503;
 }

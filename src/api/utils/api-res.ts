@@ -57,6 +57,10 @@ export class APIResponse {
 		return c.json({ success: false, code: 409, message }, 409);
 	}
 
+	static serviceUnavailable(c: Context, message: string) {
+		return c.json({ success: false, code: 503, message }, 503);
+	}
+
 	static tooManyRequests(c: Context, message: string) {
 		return c.json({ success: false, code: 429, message }, 429);
 	}
@@ -124,6 +128,7 @@ export namespace APIResponse.Schema {
 	export const badRequest = APIResponse.Utils.createErrorSchemaFactory(400);
 	export const notFound = APIResponse.Utils.createErrorSchemaFactory(404);
 	export const conflict = APIResponse.Utils.createErrorSchemaFactory(409);
+	export const serviceUnavailable = APIResponse.Utils.createErrorSchemaFactory(503);
 	export const tooManyRequests = APIResponse.Utils.createErrorSchemaFactory(429);
 }
 
@@ -143,6 +148,7 @@ export namespace APIResponse.Types {
 		| ReturnType<typeof APIResponse.badRequest>
 		| ReturnType<typeof APIResponse.notFound>
 		| ReturnType<typeof APIResponse.conflict>
+		| ReturnType<typeof APIResponse.serviceUnavailable>
 		| ReturnType<typeof APIResponse.tooManyRequests>;
 
 	export type BasicResponseSchema =
@@ -155,5 +161,6 @@ export namespace APIResponse.Types {
 		| z.infer<ReturnType<typeof APIResponse.Schema.badRequest<any>>>
 		| z.infer<ReturnType<typeof APIResponse.Schema.notFound<any>>>
 		| z.infer<ReturnType<typeof APIResponse.Schema.conflict<any>>>
+		| z.infer<ReturnType<typeof APIResponse.Schema.serviceUnavailable<any>>>
 		| z.infer<ReturnType<typeof APIResponse.Schema.tooManyRequests<any>>>;
 }
