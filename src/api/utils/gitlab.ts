@@ -100,15 +100,18 @@ export class GitLabAPI {
 
 		let res: Response;
 		try {
-			res = await this.fetcher(`${config.GITLAB_API_BASE_URL.replace(/\/+$/, "")}/projects/${config.GITLAB_PROJECT_ID}${path}`, {
-				method: init?.method ?? "GET",
-				headers: {
-					"PRIVATE-TOKEN": config.GITLAB_TOKEN,
-					...(init?.body ? { "Content-Type": "application/json" } : {}),
+			res = await this.fetcher(
+				`${config.GITLAB_API_BASE_URL.replace(/\/+$/, "")}/projects/${config.GITLAB_PROJECT_ID}${path}`,
+				{
+					method: init?.method ?? "GET",
+					headers: {
+						"PRIVATE-TOKEN": config.GITLAB_TOKEN,
+						...(init?.body ? { "Content-Type": "application/json" } : {}),
+					},
+					body: init?.body,
+					signal: AbortSignal.timeout(GitLabAPI.REQUEST_TIMEOUT_MS),
 				},
-				body: init?.body,
-				signal: AbortSignal.timeout(GitLabAPI.REQUEST_TIMEOUT_MS),
-			});
+			);
 		} catch (err: any) {
 			Logger.warn(`GitLab request ${path} failed:`, err?.message ?? err);
 			return { ok: false, status: 0, message: "Could not reach GitLab" };
@@ -142,14 +145,17 @@ export namespace GitLabAPI {
 		description: string;
 		released_at: string;
 		assets: {
-			links: Array<{
-				id: number;
-				name: string;
-				url: string;
-				direct_asset_url: string;
-				link_type: string | null;
-			}>;
+			links: AssetLink[];
 		};
+	}
+
+	/** A GitLab release asset link, e.g. the jar the release pipeline attaches. */
+	export interface AssetLink {
+		id: number;
+		name: string;
+		url: string;
+		direct_asset_url: string;
+		link_type: string | null;
 	}
 
 	/** GitLab pipeline, trimmed to what is used. */

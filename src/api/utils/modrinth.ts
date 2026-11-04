@@ -10,7 +10,8 @@ import { Logger } from "../../utils/logger";
  * it stays server-side.
  */
 export class ModrinthAPI {
-	protected static readonly defaultFetcher: ModrinthAPI.Fetcher = (input, init) => fetch(input, init);
+	protected static readonly defaultFetcher: ModrinthAPI.Fetcher = (input, init) =>
+		fetch(input, init);
 	protected static fetcher: ModrinthAPI.Fetcher = ModrinthAPI.defaultFetcher;
 
 	/** Replace the HTTP client (tests). `null` restores the real `fetch`. */
@@ -50,14 +51,18 @@ export class ModrinthAPI {
 			return { ok: false, status: 0, message: `Could not download the jar: ${err?.message ?? err}` };
 		}
 		if (!jar.ok) {
-			return { ok: false, status: jar.status, message: `Could not download the jar (status ${jar.status})` };
+			return {
+				ok: false,
+				status: jar.status,
+				message: `Could not download the jar (status ${jar.status})`,
+			};
 		}
 		const bytes = await jar.arrayBuffer();
 
 		const form = new FormData();
 		form.append(
 			"data",
-			JSON.stringify({	
+			JSON.stringify({
 				project_id: config.MODRINTH_PROJECT_ID,
 				name: input.name,
 				version_number: input.versionNumber,
@@ -69,11 +74,7 @@ export class ModrinthAPI {
 				featured: false,
 			}),
 		);
-		form.append(
-			"file",
-			new Blob([bytes]),
-			`leicraftclient-${input.versionNumber}.jar`,
-		);
+		form.append("file", new Blob([bytes]), `leicraftclient-${input.versionNumber}.jar`);
 
 		let res: Response;
 		try {
@@ -91,7 +92,8 @@ export class ModrinthAPI {
 		const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
 
 		if (!res.ok) {
-			const message = typeof body?.error === "string" ? body.error : `Modrinth responded with ${res.status}`;
+			const message =
+				typeof body?.error === "string" ? body.error : `Modrinth responded with ${res.status}`;
 
 			// A retried publish of the same version is not an error: resolve the existing one.
 			if (res.status === 400 || res.status === 409) {

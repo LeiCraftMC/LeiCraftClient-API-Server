@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { Logger } from "../utils/logger";
 import * as TableSchema from "./schema";
-import { type DrizzleDB } from "./utils";
+import type { DrizzleDB } from "./utils";
 
 export class DB {
 	protected static db: DrizzleDB.BunSQLite;

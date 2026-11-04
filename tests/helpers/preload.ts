@@ -4,10 +4,12 @@ import path from "node:path";
 import { API } from "../../src/api";
 import { AssetStore } from "../../src/api/utils/assets";
 import { DiscordOAuth } from "../../src/api/utils/discord";
+import { GitLabAPI } from "../../src/api/utils/gitlab";
+import { ModrinthAPI } from "../../src/api/utils/modrinth";
 import { MojangSessionService } from "../../src/api/utils/mojang";
 import { DB } from "../../src/db";
 import { ConfigHandler, type ENVConfigLike } from "../../src/utils/config";
-import { FakeDiscord, FakeMojang, TEST_ADMIN_DISCORD_ID } from "./fakes";
+import { FakeDiscord, FakeGitLab, FakeModrinth, FakeMojang, TEST_ADMIN_DISCORD_ID } from "./fakes";
 
 function setTestEnv(rootDir: string) {
 	const envVars = {
@@ -40,6 +42,14 @@ function setTestEnv(rootDir: string) {
 		LCC_ADMIN_DISCORD_IDS: [TEST_ADMIN_DISCORD_ID],
 
 		LCC_MOJANG_SESSION_SERVER_URL: "https://sessionserver.mojang.test",
+
+		// No network in tests: GitLab and Modrinth are answered by in-memory fakes too.
+		LCC_GITLAB_API_BASE_URL: "https://gitlab.test/api/v4",
+		LCC_GITLAB_PROJECT_ID: "1",
+		LCC_GITLAB_TOKEN: "test-gitlab-token",
+		LCC_MODRINTH_URL: "https://modrinth.test/v2",
+		LCC_MODRINTH_PROJECT_ID: "leicraftclient",
+		LCC_MODRINTH_TOKEN: "test-modrinth-token",
 	} as const satisfies ENVConfigLike;
 
 	for (const [key, value] of Object.entries(envVars)) {
@@ -87,9 +97,11 @@ beforeAll(async () => {
 
 	await AssetStore.init(config.ASSETS_DIR, config.API_PUBLIC_URL);
 
-	// No network in tests: Discord and Mojang are answered by in-memory fakes.
+	// No network in tests: Discord, Mojang, GitLab and Modrinth are answered by in-memory fakes.
 	DiscordOAuth.setFetcher(FakeDiscord.fetcher);
 	MojangSessionService.setFetcher(FakeMojang.fetcher);
+	GitLabAPI.setFetcher(FakeGitLab.fetcher);
+	ModrinthAPI.setFetcher(FakeModrinth.fetcher);
 
 	await API.init([config.APP_URL], false);
 

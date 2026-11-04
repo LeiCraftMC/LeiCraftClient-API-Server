@@ -39,12 +39,17 @@ join of the LeiCraftMC Discord server (as in V1) set `LCC_DISCORD_GUILD_ID` and
 **First admin:** there are no passwords — put your Discord user id into `LCC_ADMIN_DISCORD_IDS`
 and log in once through the website. Admins can then promote others (`PUT /v1/admin/users/{id}`).
 
+**Mod releases (optional):** publishing from the admin dashboard needs a GitLab token with
+fine-grained scopes (`LCC_GITLAB_TOKEN`, see `example.env`); the Modrinth auto-publish needs a
+project token (`LCC_MODRINTH_TOKEN`). Without them the public release endpoints still work, and
+publishing answers with a clear 503.
+
 ## Scripts
 
 - `bun run dev` — watch mode
 - `bun run check` / `bun run format` — Biome check / format
 - `bun run typecheck` — TypeScript check
-- `bun test` — run tests (in-memory fakes for Discord and Mojang, no network)
+- `bun test` — run tests (in-memory fakes for Discord, Mojang, GitLab and Modrinth, no network)
 - `bun run db:generate` — generate migrations after changing `src/db/schema.ts`
 - `bun run db:migrate` — run migrations
 - `bun run compile linux-x64-baseline` — single binary in `build/bin/` (migrations embedded; see `docker/`)
@@ -116,6 +121,29 @@ SHA-256, the file is served at `/assets/<id>.<png|json>` with `Cache-Control: im
 `Access-Control-Allow-Origin: *`. Models are re-serialized with known keys only. Files of an
 exclusive product can't be used by another page. Unreferenced uploads are deleted after 24 hours.
 
+### Mod releases
+
+Releases of the Fabric mod are published from the admin dashboard (`/v1/admin/releases`, admins
+only) in two ways:
+
+1. **Trigger a new GitLab release** (default): the API creates the release on the mod's GitLab
+   project (`LCC_GITLAB_*`), which pushes the `v<version>` tag and starts the tag pipeline that
+   builds the jar, uploads it to the project's generic package registry and attaches it to the
+   release. A per-minute sync publishes the release here once that jar asset link appears, and
+   fails it visibly when the pipeline fails.
+2. **Import an existing GitLab release**: its notes become the changelog (editable) and its jar
+   asset becomes the download — done immediately when the build already finished.
+
+The changelog is markdown and is also written to the GitLab release notes. With **auto-publish to
+Modrinth** (on by default, `LCC_MODRINTH_*`) the finished jar is uploaded to the configured
+Modrinth project, with the Minecraft versions read from the tag's own `gradle.properties` — a
+Modrinth failure never blocks the download and can be retried. Deleting a release removes it from
+the website only; the GitLab release, tag and jar stay.
+
+Public endpoints (`/v1/releases`) serve finished releases: changelog, the direct jar download
+(package registry permalink) and the Modrinth page. The website's download page and the mod's
+update check consume them (see `docs/client-integration.md`).
+
 ### Moderation & administration
 
 `/v1/moderation/*` (moderators + admins): review queues for products and community page
@@ -134,11 +162,12 @@ shared content.
 | Inventory, redeem codes | `/v1/account/inventory` | session |
 | Mod: handshake, link, own loadout | `/v1/client` | public / client session |
 | Player profiles (cape + cosmetics) | `/v1/players` | public |
+| Mod releases, changelog, downloads | `/v1/releases` | public |
 | Shop | `/v1/catalog` | public |
 | Reports | `/v1/reports` | session |
 | Studio: pages, members, collections, products, variants, owners, codes, assets | `/v1/studio` | session or API key |
 | Moderation | `/v1/moderation` | moderator / admin |
-| Administration | `/v1/admin` | admin |
+| Administration, mod releases | `/v1/admin` | admin |
 | Files | `/assets/<sha256>.<png\|json>` | public |
 
 The full contract is the OpenAPI spec at `/docs/v1/openapi` (Scalar UI at `/docs/v1`).
@@ -151,9 +180,9 @@ See the LeiCraftMC style guide:
 - [docs/05-api-contract.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/05-api-contract.md)
 - [docs/08-database.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/08-database.md)
 
-Project-specific services live in `src/api/utils/` (`discord.ts`, `mojang.ts`, `assets.ts`,
-`loadouts.ts`, `minecraftAccounts.ts`, `inventory.ts`, `redeemCodes.ts`, `products.ts`,
-`permissions.ts`, `users.ts`, `auditLog.ts`); shared enums in
+Project-specific services live in `src/api/utils/` (`discord.ts`, `mojang.ts`, `gitlab.ts`,
+`modrinth.ts`, `releases.ts`, `assets.ts`, `loadouts.ts`, `minecraftAccounts.ts`, `inventory.ts`,
+`redeemCodes.ts`, `products.ts`, `permissions.ts`, `users.ts`, `auditLog.ts`); shared enums in
 `src/api/utils/shared-models/catalogData.ts`, shared response shapes in
 `src/api/utils/shared-models/views.ts`.
 

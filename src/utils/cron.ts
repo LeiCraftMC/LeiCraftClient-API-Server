@@ -1,5 +1,6 @@
 import type { CronJob as BunCronJob } from "bun";
 import { MaintenanceTasks } from "../api/utils/maintenance";
+import { ReleaseHandler } from "../api/utils/releases";
 import { Logger } from "./logger";
 
 class CronJob {
@@ -45,6 +46,12 @@ export class CronJobHandler {
 			// uploads nothing references any more (after a grace period)
 			new CronJob("17 * * * *", async () => {
 				await MaintenanceTasks.cleanupOrphanAssets();
+			}),
+
+			// releases waiting for their GitLab build (and their Modrinth publish) — also picks
+			// up work again after a restart, since pending releases live in the DB
+			new CronJob("* * * * *", async () => {
+				await ReleaseHandler.syncPending();
 			}),
 		);
 	}

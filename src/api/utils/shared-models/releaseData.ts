@@ -36,7 +36,10 @@ export namespace ReleaseDataPolicies {
 	 */
 	export const Version = z
 		.string()
-		.regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9][a-zA-Z0-9._-]*)?$/, "Must be a version like 2.0.0 or 2.0.0-pre.5")
+		.regex(
+			/^\d+\.\d+\.\d+(-[a-zA-Z0-9][a-zA-Z0-9._-]*)?$/,
+			"Must be a version like 2.0.0 or 2.0.0-pre.5",
+		)
 		.describe("Mod version without the leading v");
 
 	export type Version = z.infer<typeof Version>;
@@ -67,7 +70,10 @@ export namespace ReleaseViews {
 			.describe(
 				"Direct download of the mod jar (GitLab package registry permalink of the release asset)",
 			),
-		modrinth_url: z.string().nullable().describe("Modrinth version page, when it was published there"),
+		modrinth_url: z
+			.string()
+			.nullable()
+			.describe("Modrinth version page, when it was published there"),
 		page_url: z.string().describe("Website page of this release"),
 	});
 	export type PublicRelease = z.infer<typeof PublicRelease>;

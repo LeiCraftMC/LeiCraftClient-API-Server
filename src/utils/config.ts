@@ -116,7 +116,7 @@ export type ENVConfigLike = {
 export type ParsedConfig = ConfigLike<typeof ConfigHandler.schema.schema>;
 
 export class ConfigHandler {
-	// Public so ENVConfigLike / ParsedConfig can derive from it without @ts-ignore.
+	// Public so ENVConfigLike / ParsedConfig can derive from it without @ts-expect-error.
 	// Treat it as read-only.
 	static schema = new ConfigSchema({
 		LOG_LEVEL: CS.enum(["debug", "info", "warn", "error", "critical"]).default("info"),
@@ -166,7 +166,7 @@ export class ConfigHandler {
 		// Modrinth auto-publish of released jars; optional — publishing fails when unset
 		MODRINTH_URL: CS.string().default("https://api.modrinth.com/v2"),
 		// Project id or slug of the LeiCraft Client project
-		MODRINTH_PROJECT_ID: CS.string().default("leicraftclient"),
+		MODRINTH_PROJECT_ID: CS.string().default("wH9eagDm"),
 		// Modrinth token created on the project's page (scoped to that project); server-side only
 		MODRINTH_TOKEN: CS.string().optional(),
 	});

@@ -19,4 +19,5 @@ router.use("*", async (c, next) => {
 });
 
 router.route("/", (await import("./users")).router);
+router.route("/", (await import("./releases")).router);
 router.route("/", (await import("./audit-logs")).router);

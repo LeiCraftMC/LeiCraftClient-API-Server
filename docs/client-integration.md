@@ -94,6 +94,25 @@ first). `PUT /loadout` replaces the whole loadout; products must be published an
 owned (`403` otherwise). After saving, re-fetch the own profile (section 3) so the change shows
 in the game. The browsable shop is the public `/v1/catalog/*`.
 
+## 5. Update check (public)
+
+Releases are published on the admin dashboard and only appear here once the GitLab build
+finished and the jar is downloadable:
+
+```
+GET /v1/releases?order=newest&limit=20                (public, no token)
+  → [ { version, title, changelog, channel: "stable"|"pre-release", published_at,
+        download_url, modrinth_url, page_url } ]
+
+GET /v1/releases/latest     → the newest one (404 while none is published)
+GET /v1/releases/<version>  → one release (404 while pending or unknown)
+```
+
+`version` is the GitLab tag without its leading `v` (`2.0.0`, `2.0.0-pre.5`). Compare versions with
+the pre-release rules (a stable build is only offered stable releases); open `page_url` in the
+browser — the website shows the changelog and the download. `download_url` is the direct jar
+(GitLab package registry permalink). The changelog is markdown.
+
 ## V1 → V2 mapping
 
 | V1 (OptiFine-style) | V2 |

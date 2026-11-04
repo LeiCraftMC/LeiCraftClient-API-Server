@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { type GenerateSpecOptions } from "hono-openapi";
+import type { GenerateSpecOptions } from "hono-openapi";
 import { AppConstants } from "../../../utils/constants";
 import { APIVersionRouter } from "../../utils/apiVersionRouter";
 import { DOCS_TAGS } from "./docs";
@@ -11,6 +11,7 @@ import { router as catalogRouter } from "./routes/catalog";
 import { router as clientRouter } from "./routes/client";
 import { router as moderationRouter } from "./routes/moderation";
 import { router as playersRouter } from "./routes/players";
+import { router as releasesRouter } from "./routes/releases";
 import { router as reportsRouter } from "./routes/reports";
 import { router as studioRouter } from "./routes/studio";
 
@@ -75,7 +76,7 @@ const openAPIConfig: Partial<GenerateSpecOptions> = {
 			},
 		],
 
-		// @ts-ignore - Scalar extension field; hono-openapi >=1.5 types drop the `x-` keys
+		// @ts-expect-error - Scalar extension field; hono-openapi >=1.5 types drop the `x-` keys
 		"x-tagGroups": [
 			{
 				name: "Account & Authentication",
@@ -90,7 +91,13 @@ const openAPIConfig: Partial<GenerateSpecOptions> = {
 			},
 			{
 				name: "Game & Shop",
-				tags: [DOCS_TAGS.CLIENT, DOCS_TAGS.PLAYERS, DOCS_TAGS.CATALOG, DOCS_TAGS.REPORTS],
+				tags: [
+					DOCS_TAGS.CLIENT,
+					DOCS_TAGS.PLAYERS,
+					DOCS_TAGS.RELEASES,
+					DOCS_TAGS.CATALOG,
+					DOCS_TAGS.REPORTS,
+				],
 			},
 			{
 				name: DOCS_TAGS.STUDIO.BASE,
@@ -114,7 +121,7 @@ const openAPIConfig: Partial<GenerateSpecOptions> = {
 			},
 			{
 				name: DOCS_TAGS.ADMIN_API.BASE,
-				tags: [DOCS_TAGS.ADMIN_API.USERS, DOCS_TAGS.ADMIN_API.AUDIT_LOG],
+				tags: [DOCS_TAGS.ADMIN_API.USERS, DOCS_TAGS.ADMIN_API.RELEASES, DOCS_TAGS.ADMIN_API.AUDIT_LOG],
 			},
 		],
 
@@ -159,6 +166,11 @@ const openAPIConfig: Partial<GenerateSpecOptions> = {
 			{
 				name: DOCS_TAGS.PLAYERS,
 				description: "Public, render-ready player profiles (cape + cosmetics) by UUID or name",
+			},
+			{
+				name: DOCS_TAGS.RELEASES,
+				description:
+					"Finished releases of the mod: changelog, direct jar download and the Modrinth page — powers the website's download page and the mod's update check",
 			},
 			{
 				name: DOCS_TAGS.CATALOG,
@@ -226,6 +238,12 @@ const openAPIConfig: Partial<GenerateSpecOptions> = {
 				"User management and roles",
 			),
 			subTag(
+				DOCS_TAGS.ADMIN_API.RELEASES,
+				"Releases",
+				DOCS_TAGS.ADMIN_API.BASE,
+				"Publish the mod: trigger a GitLab release (tag + build pipeline) or import an existing one, with changelog and optional Modrinth auto-publish",
+			),
+			subTag(
 				DOCS_TAGS.ADMIN_API.AUDIT_LOG,
 				"Audit Log",
 				DOCS_TAGS.ADMIN_API.BASE,
@@ -243,6 +261,7 @@ router.route("/", authRouter);
 router.route("/", accountRouter);
 router.route("/", clientRouter);
 router.route("/", playersRouter);
+router.route("/", releasesRouter);
 router.route("/", catalogRouter);
 router.route("/", reportsRouter);
 router.route("/", studioRouter);

@@ -10,6 +10,7 @@ export const DOCS_TAGS = {
 	CLIENT: "Client (Mod)",
 	PLAYERS: "Players",
 	CATALOG: "Catalog",
+	RELEASES: "Releases",
 	REPORTS: "Reports",
 
 	STUDIO: {
@@ -36,6 +37,7 @@ export const DOCS_TAGS = {
 		BASE: "Admin",
 
 		USERS: "Admin / Users",
+		RELEASES: "Admin / Releases",
 		AUDIT_LOG: "Admin / Audit Log",
 	},
 };

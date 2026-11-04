@@ -58,7 +58,15 @@ export namespace AuditLog {
 	] as const;
 	export type Action = (typeof Actions)[number];
 
-	export const TargetTypes = ["user", "page", "collection", "product", "code", "report", "release"] as const;
+	export const TargetTypes = [
+		"user",
+		"page",
+		"collection",
+		"product",
+		"code",
+		"report",
+		"release",
+	] as const;
 	export type TargetType = (typeof TargetTypes)[number];
 
 	export interface Entry {
