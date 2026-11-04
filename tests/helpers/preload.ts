@@ -1,4 +1,4 @@
-import { afterAll, beforeAll } from "bun:test";
+import { afterAll, beforeAll, setDefaultTimeout } from "bun:test";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { API } from "../../src/api";
@@ -84,6 +84,13 @@ async function removeDirWithRetry(dir: string, attempts = 10, delayMs = 300) {
 		}
 	}
 }
+
+/**
+ * Every authenticated request verifies an argon2id hash, so a test with a handful of requests
+ * takes 1–3s on the shared CI runner, and more while the lint and typecheck jobs run next to it.
+ * Bun's 5s default made the first tests of a run time out.
+ */
+setDefaultTimeout(30_000);
 
 let TMP_ROOT: string | null = null;
 
