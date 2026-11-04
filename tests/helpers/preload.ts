@@ -46,6 +46,7 @@ function setTestEnv(rootDir: string) {
 		// No network in tests: GitLab and Modrinth are answered by in-memory fakes too.
 		LCC_GITLAB_API_BASE_URL: "https://gitlab.test/api/v4",
 		LCC_GITLAB_PROJECT_ID: "1",
+		LCC_GITLAB_RELEASE_REF: "main",
 		LCC_GITLAB_TOKEN: "test-gitlab-token",
 		LCC_MODRINTH_URL: "https://modrinth.test/v2",
 		LCC_MODRINTH_PROJECT_ID: "leicraftclient",

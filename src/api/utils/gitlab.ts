@@ -23,7 +23,10 @@ export class GitLabAPI {
 		return Boolean(ConfigHandler.getConfig()?.GITLAB_TOKEN);
 	}
 
-	/** Creates a release, which also creates the `tag_name` tag on the default branch. */
+	/**
+	 * Creates a release. Its `tag_name` tag does not exist yet, so GitLab creates it from `ref`
+	 * (`GITLAB_RELEASE_REF`, the default branch) — that tag push starts the release pipeline.
+	 */
 	static async createRelease(input: {
 		tag: string;
 		name: string;
@@ -31,7 +34,12 @@ export class GitLabAPI {
 	}): Promise<GitLabAPI.Result<GitLabAPI.Release>> {
 		return this.request<GitLabAPI.Release>("/releases", {
 			method: "POST",
-			body: JSON.stringify({ tag_name: input.tag, name: input.name, description: input.description }),
+			body: JSON.stringify({
+				tag_name: input.tag,
+				ref: ConfigHandler.getConfig()?.GITLAB_RELEASE_REF,
+				name: input.name,
+				description: input.description,
+			}),
 		});
 	}
 

@@ -137,9 +137,14 @@ export class FakeGitLab {
 			if (FakeGitLab.releases.has(body.tag_name)) {
 				return json({ message: "Release already exists" }, 409);
 			}
+			// like GitLab: a release of a tag that doesn't exist yet needs the ref to tag
+			if (!body.ref) {
+				return json({ message: "Ref is not specified" }, 422);
+			}
 			FakeGitLab.setRelease(body.tag_name);
 			FakeGitLab.created.push({
 				tag: body.tag_name,
+				ref: body.ref,
 				name: body.name,
 				description: body.description,
 			});
@@ -195,6 +200,7 @@ export namespace FakeGitLab {
 
 	export interface CreatedRelease {
 		tag: string;
+		ref: string;
 		name: string;
 		description: string;
 	}

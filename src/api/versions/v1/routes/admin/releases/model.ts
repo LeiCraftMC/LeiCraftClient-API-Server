@@ -74,7 +74,9 @@ export namespace AdminReleasesModel.ImportCandidates {
 		tag: z.string(),
 		version: z.string(),
 		name: z.string(),
+		description: z.string().describe("Release notes on GitLab (markdown) — the changelog default"),
 		released_at: z.string(),
+		has_jar: z.boolean().describe("The build already attached the jar asset"),
 		imported: z.boolean().describe("Already has a release on the website"),
 	});
 	export type Candidate = z.infer<typeof Candidate>;

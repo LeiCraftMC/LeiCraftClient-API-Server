@@ -482,6 +482,17 @@ export class ReleaseHandler {
 				pipeline.ok ? pipeline.data.web_url : null,
 			);
 		}
+
+		// still building: remember the pipeline so the dashboard can link to its live logs
+		if (pipeline.ok && pipeline.data.web_url !== release.pipeline_url) {
+			const updated = await DB.instance()
+				.update(DB.Tables.releases)
+				.set({ pipeline_url: pipeline.data.web_url })
+				.where(and(eq(DB.Tables.releases.id, release.id), eq(DB.Tables.releases.status, "pending")))
+				.returning()
+				.get();
+			return updated ?? release;
+		}
 		return release;
 	}
 

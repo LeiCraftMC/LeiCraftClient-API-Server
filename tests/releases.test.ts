@@ -69,11 +69,19 @@ describe("Releases", () => {
 
 		// the API created the GitLab release, which is what pushes the tag that starts the build
 		expect(FakeGitLab.created).toEqual([
-			{ tag: "v3.0.0", name: "LeiCraftClient v3.0.0", description: changelog },
+			{ tag: "v3.0.0", ref: "main", name: "LeiCraftClient v3.0.0", description: changelog },
 		]);
 
 		// not public while the build runs
 		expect(await makeAPIRequest("/v1/releases", {}, 200)).toEqual([]);
+
+		// the dashboard links the running pipeline
+		await ReleaseHandler.syncPending();
+		const building = await makeAPIRequest("/v1/admin/releases/3.0.0", { authToken: admin.token });
+		expect(building).toMatchObject({
+			status: "pending",
+			pipeline_url: "https://gitlab.test/pipeline/v3.0.0",
+		});
 
 		// the pipeline finished and attached the jar
 		finishBuild("3.0.0");
@@ -358,9 +366,12 @@ describe("Releases", () => {
 		});
 		expect(candidates).toHaveLength(2);
 		expect(candidates.find((candidate: any) => candidate.version === "4.0.0").imported).toBe(true);
-		expect(candidates.find((candidate: any) => candidate.version === "4.0.0-pre.1").imported).toBe(
-			false,
-		);
+		expect(candidates.find((candidate: any) => candidate.version === "4.0.0-pre.1")).toMatchObject({
+			imported: false,
+			// the notes are the changelog default; no jar yet while its pipeline runs
+			description: "pre",
+			has_jar: false,
+		});
 
 		await makeAPIRequest("/v1/admin/releases/import-candidates", { authToken: user.token }, 403);
 	});

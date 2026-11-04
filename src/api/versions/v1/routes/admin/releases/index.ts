@@ -157,7 +157,9 @@ router.get(
 				tag: release.tag_name,
 				version,
 				name: release.name,
+				description: release.description ?? "",
 				released_at: release.released_at,
+				has_jar: GitLabAPI.jarAssetLinkOf(release) !== null,
 				imported: Boolean(ReleaseHandler.get(version)),
 			}));
 

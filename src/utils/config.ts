@@ -160,6 +160,8 @@ export class ConfigHandler {
 		GITLAB_API_BASE_URL: CS.string().default("https://git.leicraftmc.de/api/v4"),
 		// Numeric id or URL-encoded path of the LeiCraftClient/Fabric project
 		GITLAB_PROJECT_ID: CS.string().default("79"),
+		// Branch (or commit) new release tags are created from
+		GITLAB_RELEASE_REF: CS.string().default("main"),
 		// Personal access token with fine-grained scopes (see example.env); never sent to clients
 		GITLAB_TOKEN: CS.string().optional(),
 
