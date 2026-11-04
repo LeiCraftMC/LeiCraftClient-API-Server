@@ -16,6 +16,9 @@ build-and-push:
       - .bun/install/cache/
       - node_modules/
 
+  tags:
+    - glar-linux-medium-amd64
+
   before_script:
     # Dependencies (including devDependencies — the compile step needs @cleverjs/cli)
     - apt-get update
