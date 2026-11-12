@@ -19,7 +19,7 @@ export class MinecraftAccountHandler {
 	static readonly LINK_CODE_LIFETIME_MS = 10 * 60 * 1000;
 	static readonly MAX_ACCOUNTS_PER_USER = 5;
 
-	/** A player counts as LeiCraft Client user when the mod was used within this window. */
+	/** A player counts as LeiCraftClient user when the mod was used within this window. */
 	static readonly USES_CLIENT_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 	/** `last_seen_at` is written at most this often per account. */
 	static readonly LAST_SEEN_UPDATE_INTERVAL_MS = 60 * 60 * 1000;

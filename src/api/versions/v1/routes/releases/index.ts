@@ -14,7 +14,7 @@ router.get(
 	APIRouteSpec.unauthenticated({
 		summary: "List releases",
 		description:
-			"Finished releases of the LeiCraft Client mod, newest first: changelog (markdown), the direct jar download and the Modrinth page — what the download page and the mod's update check consume.",
+			"Finished releases of the LeiCraftClient mod, newest first: changelog (markdown), the direct jar download and the Modrinth page — what the download page and the mod's update check consume.",
 		tags: [DOCS_TAGS.RELEASES],
 
 		responses: APIResponseSpec.describeWithWrongInputs(

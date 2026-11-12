@@ -53,6 +53,6 @@ export namespace PlayersModel.Showcase {
 
 	export const Response = z
 		.array(SharedViews.PlayerProfile)
-		.describe("Random players who wear a cape or cosmetics, recent LeiCraft Client users first");
+		.describe("Random players who wear a cape or cosmetics, recent LeiCraftClient users first");
 	export type Response = z.infer<typeof Response>;
 }

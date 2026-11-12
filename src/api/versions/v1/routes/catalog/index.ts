@@ -91,7 +91,7 @@ router.get(
 	APIRouteSpec.unauthenticated({
 		summary: "List categories",
 		description:
-			"The three fixed shop categories — `official` (the single page of the LeiCraft Client team), `partner` (official partner pages) and `community` (user uploads) — with their number of visible pages and listed products.",
+			"The three fixed shop categories — `official` (the single page of the LeiCraftClient team), `partner` (official partner pages) and `community` (user uploads) — with their number of visible pages and listed products.",
 		tags: [DOCS_TAGS.CATALOG],
 
 		responses: APIResponseSpec.describeBasic(

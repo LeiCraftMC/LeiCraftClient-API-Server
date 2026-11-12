@@ -117,7 +117,7 @@ router.post(
 	APIRouteSpec.authenticated({
 		summary: "Create a page",
 		description:
-			"Users create their own `community` page (one per user) to upload capes and cosmetics. Admins create `partner` pages and the single `official` page (the LeiCraft Client team's shop — there is only one) and can assign an owner, who then manages the page and its members.",
+			"Users create their own `community` page (one per user) to upload capes and cosmetics. Admins create `partner` pages and the single `official` page (the LeiCraftClient team's shop — there is only one) and can assign an owner, who then manages the page and its members.",
 		tags: [DOCS_TAGS.STUDIO.PAGES],
 
 		responses: APIResponseSpec.describeBasic(
@@ -180,7 +180,7 @@ router.post(
 			}
 		}
 
-		// The official category is a single page (the LeiCraft Client team's shop), not a list.
+		// The official category is a single page (the LeiCraftClient team's shop), not a list.
 		if (body.category === "official") {
 			const official = await DB.instance()
 				.select({ id: DB.Tables.pages.id })

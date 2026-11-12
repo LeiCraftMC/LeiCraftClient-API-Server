@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "LeiCraft Client API Server",
+	"description": "LeiCraftClient API Server",
 	"scripts": {
 		"check": "bunx --bun biome check",
 		"check:ci": "bunx --bun biome ci",

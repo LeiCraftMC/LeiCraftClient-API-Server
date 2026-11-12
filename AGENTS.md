@@ -1,6 +1,6 @@
 # AGENTS.md — operating manual for AI coding agents
 
-You are working in the LeiCraft Client API server, a LeiCraftMC backend service. Follow the
+You are working in the LeiCraftClient API server, a LeiCraftMC backend service. Follow the
 LeiCraftMC Style Guides: https://git.leicraftmc.de/LeiCraftMC/Style-Guides.
 
 ## Must read

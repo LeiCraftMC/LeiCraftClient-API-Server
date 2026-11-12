@@ -345,12 +345,12 @@ describe("Releases", () => {
 		await makeAPIRequest("/v1/admin/releases/3.4.0", {
 			method: "PUT",
 			authToken: admin.token,
-			body: { title: "LeiCraft Client 3.4.0", changelog: "edited" },
+			body: { title: "LeiCraftClient 3.4.0", changelog: "edited" },
 		});
 
 		expect(FakeGitLab.updatedNotes).toEqual([{ tag: "v3.4.0", description: "edited" }]);
 		expect(await makeAPIRequest("/v1/releases/3.4.0", {}, 200)).toMatchObject({
-			title: "LeiCraft Client 3.4.0",
+			title: "LeiCraftClient 3.4.0",
 			changelog: "edited",
 		});
 

@@ -1,6 +1,6 @@
 # Client integration (Fabric mod)
 
-How the LeiCraft Client mod talks to this API. It replaces the OptiFine-style V1 routes
+How the LeiCraftClient mod talks to this API. It replaces the OptiFine-style V1 routes
 (`/capes/<name>.png`, `/users/<name>.cfg`); there is no compatibility layer.
 
 Every JSON response is the envelope `{ success, code, message, data }` — read `data` on success,
@@ -67,7 +67,7 @@ POST /v1/players/lookup  { uuids: [...], names: [...] }    (≤ 100 players per 
 - Cape textures are 2:1 PNGs (64×32 up to 2048×1024) — use them as the vanilla cape texture.
   Models are OptiFine *PlayerItem* JSON (the format `CpmParser` reads); a model-level `texture`
   key is stripped on upload — always use the variant's `texture`.
-- **Tab-list badge:** `uses_client` is true when the account used the LeiCraft Client within the
+- **Tab-list badge:** `uses_client` is true when the account used the LeiCraftClient within the
   last 30 days (refreshed by the handshake and by client-session requests). This replaces the
   "has a cape" heuristic of `LeiCraftUsers`.
 

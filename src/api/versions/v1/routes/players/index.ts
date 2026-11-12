@@ -17,7 +17,7 @@ router.post(
 	APIRouteSpec.unauthenticated({
 		summary: "Look up players",
 		description:
-			"Render-ready profiles (cape, cosmetics with all variants, LeiCraft Client usage) for up to 100 players in one request — what the mod calls for the players around it. Asset URLs are content-addressed and can be cached forever. Players without a profile are omitted.",
+			"Render-ready profiles (cape, cosmetics with all variants, LeiCraftClient usage) for up to 100 players in one request — what the mod calls for the players around it. Asset URLs are content-addressed and can be cached forever. Players without a profile are omitted.",
 		tags: [DOCS_TAGS.PLAYERS],
 
 		responses: APIResponseSpec.describeWithWrongInputs(
@@ -74,7 +74,7 @@ router.get(
 	APIRouteSpec.unauthenticated({
 		summary: "Showcase players",
 		description:
-			"A few random players who wear a cape or cosmetics, for the website's landing page. Players who used the LeiCraft Client within the last 30 days come first. Same filtering as every public profile (banned users and items that can't show are left out). Drawn from a pool that is refreshed at most once a minute.",
+			"A few random players who wear a cape or cosmetics, for the website's landing page. Players who used the LeiCraftClient within the last 30 days come first. Same filtering as every public profile (banned users and items that can't show are left out). Drawn from a pool that is refreshed at most once a minute.",
 		tags: [DOCS_TAGS.PLAYERS],
 
 		responses: APIResponseSpec.describeWithWrongInputs(

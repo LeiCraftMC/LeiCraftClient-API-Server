@@ -146,7 +146,7 @@ export const minecraftAccounts = sqliteTable(
 
 		cape_product_id: integer().references(() => products.id, { onDelete: "set null" }),
 
-		// last authenticated activity of the LeiCraft Client (mod) for this account
+		// last authenticated activity of the LeiCraftClient (mod) for this account
 		last_seen_at: integer(),
 
 		created_at: SQLUtils.getCreatedAtColumn(),
@@ -593,7 +593,7 @@ export const auditLogs = sqliteTable(
 // ─── Mod releases ────────────────────────────────────────────────────────────────────────────
 
 /**
- * A release of the LeiCraft Client Fabric mod, created on the admin dashboard: either a new GitLab
+ * A release of the LeiCraftClient Fabric mod, created on the admin dashboard: either a new GitLab
  * release was triggered (tag + build pipeline attach the jar asset) or an existing GitLab release
  * was imported. `download_url` is set once the pipeline finished and the jar asset link appeared;
  * only then the release is `published` and served publicly. The Modrinth auto-publish is tracked

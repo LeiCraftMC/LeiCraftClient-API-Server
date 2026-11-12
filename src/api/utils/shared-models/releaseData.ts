@@ -2,7 +2,7 @@ import z from "zod";
 import { SharedViews } from "./views";
 
 /**
- * Releases of the LeiCraft Client Fabric mod. A release is created on the admin dashboard and
+ * Releases of the LeiCraftClient Fabric mod. A release is created on the admin dashboard and
  * either triggers a new GitLab release (tag + pipeline + jar asset) or imports an existing one;
  * the public endpoints only serve releases that finished (`status === "published"`).
  */

@@ -1,5 +1,5 @@
 export namespace AppConstants {
-	export const APP_NAME = "LeiCraft Client";
+	export const APP_NAME = "LeiCraftClient";
 
 	export const APP_ENV_PREFIX = "LCC";
 

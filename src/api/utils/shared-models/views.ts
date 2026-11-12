@@ -119,7 +119,7 @@ export namespace SharedViews {
 				"Mojang texture URL. Browsers load the skin through `<API>/skins/<uuid>.png` (with CORS).",
 			),
 		skin_model: MinecraftDataPolicies.SkinModel,
-		uses_client: z.boolean().describe("Used the LeiCraft Client within the last 30 days"),
+		uses_client: z.boolean().describe("Used the LeiCraftClient within the last 30 days"),
 		linked_at: z.number().int().nullable(),
 	});
 	export type MinecraftAccount = z.infer<typeof MinecraftAccount>;
@@ -182,7 +182,7 @@ export namespace SharedViews {
 		skin_model: MinecraftDataPolicies.SkinModel.describe(
 			"Skin model from the last mod handshake — renderers that know the live skin should use that",
 		),
-		uses_client: z.boolean().describe("Used the LeiCraft Client within the last 30 days"),
+		uses_client: z.boolean().describe("Used the LeiCraftClient within the last 30 days"),
 		cape: z
 			.object({
 				product_id: z.number().int(),

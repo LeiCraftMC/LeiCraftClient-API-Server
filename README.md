@@ -1,6 +1,6 @@
-# LeiCraft Client API Server
+# LeiCraftClient API Server
 
-Backend of **LeiCraft Client V2**: Discord accounts, Minecraft account linking through the mod,
+Backend of **LeiCraftClient V2**: Discord accounts, Minecraft account linking through the mod,
 the cape & cosmetics shop (official, partner and community pages), exclusive items via redeem
 codes and grants, and moderation.
 
@@ -31,7 +31,7 @@ bun run dev        # http://localhost:12331 → API docs at /docs/v1
 
 Ports: the API runs on **12331**, the website on **12332** (`LCC_APP_URL`).
 
-**Discord app:** use the existing LeiCraft Client application and add the redirect URI
+**Discord app:** use the existing LeiCraftClient application and add the redirect URI
 `<LCC_APP_URL>/auth/discord/callback` (or set `LCC_DISCORD_REDIRECT_URI`). For the automatic
 join of the LeiCraftMC Discord server (as in V1) set `LCC_DISCORD_GUILD_ID` and
 `LCC_DISCORD_BOT_TOKEN`; the bot must be in the server.
@@ -91,7 +91,7 @@ account has its own loadout** (cape + up to 10 cosmetics).
 
 ### Catalog: categories → pages → collections → products
 
-- **Categories** are fixed: `official` (a single page — the LeiCraft Client team's shop; the
+- **Categories** are fixed: `official` (a single page — the LeiCraftClient team's shop; the
   database allows only one), `partner` (one page per partner), `community` (one page per user).
 - **Pages** have members (`owner`, `manager`) who manage them in the **studio** (`/v1/studio/*`).
   Users create their own community page; admins create the official page and partner pages and

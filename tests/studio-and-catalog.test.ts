@@ -203,7 +203,7 @@ describe("Pages", () => {
 		await createPage(admin.token, {
 			category: "official",
 			slug: slug("official"),
-			name: "LeiCraft Client",
+			name: "LeiCraftClient",
 		});
 		await createPage(
 			admin.token,

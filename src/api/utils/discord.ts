@@ -3,7 +3,7 @@ import { AppConstants } from "../../utils/constants";
 import { Logger } from "../../utils/logger";
 
 /**
- * Discord OAuth2 login — the same flow as LeiCraft Client V1 (authorization code grant, scopes
+ * Discord OAuth2 login — the same flow as LeiCraftClient V1 (authorization code grant, scopes
  * `identify guilds.join`, the user is added to the LeiCraftMC guild on login), plus a single-use
  * `state` against login CSRF. The website owns the redirect page and hands `code` + `state` to
  * `POST /v1/auth/discord/callback`; the Discord access token is used once and never stored.

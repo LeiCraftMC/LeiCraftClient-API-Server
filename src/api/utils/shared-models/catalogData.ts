@@ -7,7 +7,7 @@ import z from "zod";
 export namespace CatalogSettings {
 	/**
 	 * The three fixed shop categories:
-	 * - `official`  — LeiCraft Client cosmetics made by the team (pages managed by admins + page members)
+	 * - `official`  — LeiCraftClient cosmetics made by the team (pages managed by admins + page members)
 	 * - `partner`   — one page per partner, self-managed by its members without review
 	 * - `community` — one page per user; every product is reviewed by a moderator before it goes live
 	 */
@@ -17,12 +17,12 @@ export namespace CatalogSettings {
 
 	export const CategoryInfo = {
 		official: {
-			name: "LeiCraft Client",
-			description: "Official capes and cosmetics made by the LeiCraft Client team.",
+			name: "LeiCraftClient",
+			description: "Official capes and cosmetics made by the LeiCraftClient team.",
 		},
 		partner: {
 			name: "Partners",
-			description: "Capes and cosmetics from official LeiCraft Client partners.",
+			description: "Capes and cosmetics from official LeiCraftClient partners.",
 		},
 		community: {
 			name: "Community",
