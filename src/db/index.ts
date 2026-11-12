@@ -93,6 +93,7 @@ export namespace DB.Tables {
 
 	export const userItems = TableSchema.userItems;
 	export const equippedCosmetics = TableSchema.equippedCosmetics;
+	export const wardrobeItems = TableSchema.wardrobeItems;
 	export const redeemCodes = TableSchema.redeemCodes;
 	export const redeemCodeProducts = TableSchema.redeemCodeProducts;
 	export const redeemCodeUses = TableSchema.redeemCodeUses;
@@ -128,6 +129,7 @@ export namespace DB.Models {
 
 	export type UserItem = typeof DB.Tables.userItems.$inferSelect;
 	export type EquippedCosmetic = typeof DB.Tables.equippedCosmetics.$inferSelect;
+	export type WardrobeItem = typeof DB.Tables.wardrobeItems.$inferSelect;
 	export type RedeemCode = typeof DB.Tables.redeemCodes.$inferSelect;
 	export type RedeemCodeProduct = typeof DB.Tables.redeemCodeProducts.$inferSelect;
 	export type RedeemCodeUse = typeof DB.Tables.redeemCodeUses.$inferSelect;

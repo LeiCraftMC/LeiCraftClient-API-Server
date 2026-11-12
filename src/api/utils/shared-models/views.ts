@@ -124,7 +124,7 @@ export namespace SharedViews {
 	});
 	export type MinecraftAccount = z.infer<typeof MinecraftAccount>;
 
-	/** Something the user can equip right now (wardrobe listing). */
+	/** Something in the user's wardrobe: an owned exclusive or a saved free product. */
 	export const WardrobeItem = z.object({
 		product: Product,
 		page: z.object({
@@ -136,8 +136,23 @@ export namespace SharedViews {
 		owned: z
 			.boolean()
 			.describe("Exclusive product the user owns (free products are usable without owning them)"),
+		removable: z
+			.boolean()
+			.describe("Saved free product the user can remove; owned exclusives always stay"),
+		added_at: z
+			.number()
+			.int()
+			.describe("When the product was saved (or, for exclusives, when it was received)"),
 	});
 	export type WardrobeItem = z.infer<typeof WardrobeItem>;
+
+	/** Whether one product is in the user's wardrobe. */
+	export const WardrobeStatus = z.object({
+		in_wardrobe: z.boolean(),
+		owned: z.boolean().describe("Exclusive product the user owns — always in the wardrobe"),
+		removable: z.boolean(),
+	});
+	export type WardrobeStatus = z.infer<typeof WardrobeStatus>;
 
 	/** What a Minecraft account has equipped (owner view). */
 	export const Loadout = z.object({

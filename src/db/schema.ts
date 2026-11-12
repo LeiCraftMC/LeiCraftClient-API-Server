@@ -454,6 +454,30 @@ export const equippedCosmetics = sqliteTable(
 );
 
 /**
+ * Free products a user saved to their wardrobe (equipping one saves it too). Exclusive products
+ * the user owns are always in the wardrobe and need no row here.
+ *
+ * @deprecated Use DB.Tables.wardrobeItems to access this table.
+ */
+export const wardrobeItems = sqliteTable(
+	"wardrobe_items",
+	{
+		user_id: integer()
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		product_id: integer()
+			.notNull()
+			.references(() => products.id, { onDelete: "cascade" }),
+
+		created_at: SQLUtils.getCreatedAtColumn(),
+	},
+	(table) => [
+		primaryKey({ columns: [table.user_id, table.product_id] }),
+		index("wardrobe_items_product_id_idx").on(table.product_id),
+	],
+);
+
+/**
  * Redeem codes issued by an official or partner page. Each code grants one or more products of
  * that page (`redeem_code_products`).
  *

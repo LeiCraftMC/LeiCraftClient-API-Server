@@ -22,3 +22,11 @@ export namespace AccountModel.Wardrobe {
 	export const Response = z.array(SharedViews.WardrobeItem);
 	export type Response = z.infer<typeof Response>;
 }
+
+export namespace AccountModel.WardrobeItem {
+	export const Params = WardrobeHandler.Params;
+	export type Params = z.infer<typeof Params>;
+
+	export const Response = SharedViews.WardrobeStatus;
+	export type Response = z.infer<typeof Response>;
+}

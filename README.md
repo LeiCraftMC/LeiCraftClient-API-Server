@@ -112,6 +112,10 @@ account has its own loadout** (cape + up to 10 cosmetics).
 - Availability: `free` (anyone can equip) or `exclusive` (official/partner only — owned through a
   **redeem code** or a **direct grant** from the page). `listed: false` hides a product from the
   catalog listings (reachable by id).
+- **Wardrobe:** each user's own collection (`/v1/account/wardrobe`, the mod's `/v1/client/wardrobe`)
+  — the exclusives they own (always there) plus free products they saved from the shop
+  (`PUT /v1/account/wardrobe/{productId}`, at most 500). Equipping a free product saves it too;
+  removing one (`DELETE …/{productId}`) also takes it off every linked account.
 
 ### Assets
 
@@ -159,9 +163,10 @@ shared content.
 | Discord login, session | `/v1/auth` | public / session |
 | Account, API keys, preferences | `/v1/account` | session |
 | Linked Minecraft accounts, loadouts | `/v1/account/minecraft` | session |
+| Wardrobe (saved items) | `/v1/account/wardrobe` | session |
 | Inventory, redeem codes | `/v1/account/inventory` | session |
 | Mod: handshake, link, own loadout | `/v1/client` | public / client session |
-| Player profiles (cape + cosmetics) | `/v1/players` | public |
+| Player profiles (cape + cosmetics), landing-page showcase | `/v1/players` | public |
 | Mod releases, changelog, downloads | `/v1/releases` | public |
 | Shop | `/v1/catalog` | public |
 | Reports | `/v1/reports` | session |

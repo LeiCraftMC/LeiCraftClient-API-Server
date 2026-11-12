@@ -1,10 +1,11 @@
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, exists, inArray, isNotNull, or, sql } from "drizzle-orm";
 import { DB } from "../../db";
 import type { DrizzleDB } from "../../db/utils";
 import { CatalogQueries, CatalogViews } from "./catalogViews";
 import { MinecraftAccountHandler } from "./minecraftAccounts";
 import type { SharedViews } from "./shared-models/views";
 import { UserHandler } from "./users";
+import { WardrobeHandler } from "./wardrobe";
 
 /**
  * What a Minecraft account wears. The cape is `minecraft_accounts.cape_product_id`, cosmetics are
@@ -226,7 +227,44 @@ export class LoadoutHandler {
 			);
 		}
 
+		// Whatever is worn is in the wardrobe, so it can be found (and taken off) there later.
+		await WardrobeHandler.saveEquipped(userID, productIDs, tx);
+
 		return { ok: true };
+	}
+
+	/**
+	 * Random players who wear a cape or cosmetics, for the website's landing page. Players who
+	 * used the client within the last 30 days come first; banned users and items that can't show
+	 * are filtered out like in every public profile.
+	 */
+	static async showcase(limit: number, tx: DrizzleDB = DB.instance()) {
+		const accounts = DB.Tables.minecraftAccounts;
+		const recentSince = Date.now() - MinecraftAccountHandler.USES_CLIENT_WINDOW_MS;
+
+		const wearsSomething = or(
+			isNotNull(accounts.cape_product_id),
+			exists(
+				tx
+					.select({ one: sql`1` })
+					.from(DB.Tables.equippedCosmetics)
+					.where(eq(DB.Tables.equippedCosmetics.minecraft_account_id, accounts.id)),
+			),
+		);
+
+		// Over-fetch: some candidates only wear items that are no longer visible.
+		const candidates = await tx
+			.select()
+			.from(accounts)
+			.where(and(isNotNull(accounts.user_id), wearsSomething))
+			.orderBy(desc(sql`coalesce(${accounts.last_seen_at}, 0) > ${recentSince}`), sql`random()`)
+			.limit(limit * 4)
+			.all();
+
+		const profiles = await this.getProfiles(candidates, tx);
+		return profiles
+			.filter((profile) => profile.cape !== null || profile.cosmetics.length > 0)
+			.slice(0, limit);
 	}
 
 	/** Public, render-ready profiles of the given accounts (same order). */

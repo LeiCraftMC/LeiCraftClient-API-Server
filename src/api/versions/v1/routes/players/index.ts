@@ -69,6 +69,35 @@ router.post(
 );
 
 router.get(
+	"/showcase",
+
+	APIRouteSpec.unauthenticated({
+		summary: "Showcase players",
+		description:
+			"A few random players who wear a cape or cosmetics, for the website's landing page. Players who used the LeiCraft Client within the last 30 days come first. Same filtering as every public profile (banned users and items that can't show are left out).",
+		tags: [DOCS_TAGS.PLAYERS],
+
+		responses: APIResponseSpec.describeWithWrongInputs(
+			APIResponseSpec.success("Showcase retrieved successfully", PlayersModel.Showcase.Response),
+		),
+	}),
+
+	zValidator("query", PlayersModel.Showcase.Query),
+
+	async (c) => {
+		const { limit } = c.req.valid("query");
+
+		c.header("Cache-Control", "public, max-age=60");
+
+		return APIResponse.success(
+			c,
+			"Showcase retrieved successfully",
+			await LoadoutHandler.showcase(limit),
+		);
+	},
+);
+
+router.get(
 	"/by-name/:name",
 
 	APIRouteSpec.unauthenticated({

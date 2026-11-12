@@ -44,3 +44,15 @@ export namespace PlayersModel.Lookup {
 		.describe("Profiles of the requested players that have one; unknown players are omitted");
 	export type Response = z.infer<typeof Response>;
 }
+
+export namespace PlayersModel.Showcase {
+	export const Query = z.object({
+		limit: z.coerce.number().int().min(1).max(12).default(6),
+	});
+	export type Query = z.infer<typeof Query>;
+
+	export const Response = z
+		.array(SharedViews.PlayerProfile)
+		.describe("Random players who wear a cape or cosmetics, recent LeiCraft Client users first");
+	export type Response = z.infer<typeof Response>;
+}

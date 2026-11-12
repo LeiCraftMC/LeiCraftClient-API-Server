@@ -79,7 +79,7 @@ Single lookups exist for the website: `GET /v1/players/{uuid}`, `GET /v1/players
 ```
 GET /v1/client/wardrobe?type=cape|cosmetic&search=&owned_only=true&limit=50&offset=0
   → [ { product: { id, type, name, description, availability, texture, preview, variants, … },
-        page: { id, category, slug, name }, owned } ]
+        page: { id, category, slug, name }, owned, removable, added_at } ]
 
 GET /v1/client/loadout
   → { cape: Product | null, cosmetics: [ { product: Product, variant_id } ] }
@@ -88,11 +88,17 @@ PUT /v1/client/loadout  { cape_product_id: number | null,
                           cosmetics: [ { product_id, variant_id?: number | null } ] }   (≤ 10)
 ```
 
-All three need a linked account (`400` otherwise). The wardrobe lists everything the linked user
-can equip: public free products that are listed, plus the exclusive products they own (owned
-first). `PUT /loadout` replaces the whole loadout; products must be published and exclusive ones
-owned (`403` otherwise). After saving, re-fetch the own profile (section 3) so the change shows
-in the game. The browsable shop is the public `/v1/catalog/*`.
+All three need a linked account (`400` otherwise). The wardrobe is the user's own collection, not
+the whole catalog: the exclusive products they own (always there, `removable: false`) plus the
+free products they saved on the website or equipped (owned first, then the most recently saved).
+Equipping a free product through either `PUT /loadout` saves it to the wardrobe; removing it from
+the wardrobe on the website (`DELETE /v1/account/wardrobe/{productId}`) also takes it off every
+linked account. Offer a button to the shop (`<website>/shop`) for finding new items.
+
+`PUT /loadout` replaces the whole loadout; products must be published and exclusive ones owned
+(`403` otherwise) — a product doesn't have to be in the wardrobe yet. After saving, re-fetch the
+own profile (section 3) so the change shows in the game. The browsable shop is the public
+`/v1/catalog/*`.
 
 ## 5. Update check (public)
 

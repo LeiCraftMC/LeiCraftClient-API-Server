@@ -319,9 +319,9 @@ router.get(
 	"/wardrobe",
 
 	APIRouteSpec.authenticated({
-		summary: "List equippable items",
+		summary: "List wardrobe",
 		description:
-			"For the in-game wardrobe: everything the linked user can equip — public free products that are listed, plus the exclusive products they own (owned first). Needs a linked account.",
+			"For the in-game wardrobe: the linked user's wardrobe — the exclusive products they own (always there) plus the free products they saved or equipped (owned first, then the most recently saved). New items are found in the shop on the website. Needs a linked account.",
 		tags: [DOCS_TAGS.CLIENT],
 
 		responses: APIResponseSpec.describeWithWrongInputs(
