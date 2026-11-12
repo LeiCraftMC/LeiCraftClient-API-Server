@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, test } from "bun:test";
 import { eq } from "drizzle-orm";
 import { API } from "../src/api";
+import { LoadoutHandler } from "../src/api/utils/loadouts";
 import { SkinProxy } from "../src/api/utils/skins";
 import { AccountMinecraftModel } from "../src/api/versions/v1/routes/account/minecraft/model";
 import { AccountModel } from "../src/api/versions/v1/routes/account/model";
@@ -18,6 +19,7 @@ import {
 	seedUserWithSession,
 } from "./helpers/seed";
 
+// Many authenticated requests each (argon2 checks): beyond Bun's 5 s default on a busy machine.
 describe("Wardrobe", () => {
 	test("holds owned exclusives and saved free products, not the whole catalog", async () => {
 		const page = await seedPage("partner", null);
@@ -102,7 +104,7 @@ describe("Wardrobe", () => {
 			.set({ status: "disabled" })
 			.where(eq(DB.Tables.products.id, unlisted.id));
 		expect((await list()).map((item) => item.product.id)).toEqual([ownedExclusive.id]);
-	});
+	}, 30_000);
 
 	test("equipping saves to the wardrobe and removing takes it off every account", async () => {
 		const page = await seedPage("partner", null);
@@ -143,7 +145,7 @@ describe("Wardrobe", () => {
 		);
 		expect(loadouts.map((loadout) => loadout.cape)).toEqual([null, null]);
 		expect(loadouts[0]?.cosmetics.map((entry) => entry.product.id)).toEqual([cosmetic.id]);
-	});
+	}, 30_000);
 
 	test("the mod's wardrobe needs a linked account and lists the same items", async () => {
 		const session = await loginWithMinecraft();
@@ -165,7 +167,7 @@ describe("Wardrobe", () => {
 			expectedBodySchema: ClientModel.Wardrobe.Response,
 		});
 		expect(items.map((item) => item.product.id)).toEqual([saved.id]);
-	});
+	}, 30_000);
 });
 
 describe("Showcase", () => {
@@ -185,6 +187,7 @@ describe("Showcase", () => {
 
 		const unlinked = await seedMinecraftAccount(null, { cape_product_id: cape.id });
 
+		LoadoutHandler.clearShowcasePool();
 		const profiles = await makeAPIRequest("/v1/players/showcase?limit=12", {
 			expectedBodySchema: PlayersModel.Showcase.Response,
 		});
@@ -199,7 +202,7 @@ describe("Showcase", () => {
 		);
 
 		await makeAPIRequest("/v1/players/showcase?limit=50", {}, 400);
-	});
+	}, 30_000);
 });
 
 describe("Skin proxy", () => {

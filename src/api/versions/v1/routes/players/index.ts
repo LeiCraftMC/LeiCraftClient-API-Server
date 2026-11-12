@@ -74,7 +74,7 @@ router.get(
 	APIRouteSpec.unauthenticated({
 		summary: "Showcase players",
 		description:
-			"A few random players who wear a cape or cosmetics, for the website's landing page. Players who used the LeiCraft Client within the last 30 days come first. Same filtering as every public profile (banned users and items that can't show are left out).",
+			"A few random players who wear a cape or cosmetics, for the website's landing page. Players who used the LeiCraft Client within the last 30 days come first. Same filtering as every public profile (banned users and items that can't show are left out). Drawn from a pool that is refreshed at most once a minute.",
 		tags: [DOCS_TAGS.PLAYERS],
 
 		responses: APIResponseSpec.describeWithWrongInputs(

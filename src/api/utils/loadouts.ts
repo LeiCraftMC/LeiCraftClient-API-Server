@@ -233,12 +233,51 @@ export class LoadoutHandler {
 		return { ok: true };
 	}
 
+	static readonly SHOWCASE_POOL_SIZE = 48;
+	static readonly SHOWCASE_POOL_TTL_MS = 60 * 1000;
+
+	protected static showcasePool: {
+		expiresAt: number;
+		profiles: SharedViews.PlayerProfile[];
+	} | null = null;
+
 	/**
-	 * Random players who wear a cape or cosmetics, for the website's landing page. Players who
-	 * used the client within the last 30 days come first; banned users and items that can't show
-	 * are filtered out like in every public profile.
+	 * Random players who wear a cape or cosmetics, for the website's landing page (a public route
+	 * hit on every landing-page render). A pool of up to {@link SHOWCASE_POOL_SIZE} players is
+	 * picked at most once per {@link SHOWCASE_POOL_TTL_MS}; each call returns a random sample of it.
 	 */
 	static async showcase(limit: number, tx: DrizzleDB = DB.instance()) {
+		const now = Date.now();
+		if (!this.showcasePool || this.showcasePool.expiresAt <= now) {
+			this.showcasePool = {
+				expiresAt: now + this.SHOWCASE_POOL_TTL_MS,
+				profiles: await this.loadShowcasePool(tx),
+			};
+		}
+
+		// Fisher–Yates on a copy, then the first `limit`.
+		const sample = [...this.showcasePool.profiles];
+		for (let i = sample.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[sample[i], sample[j]] = [
+				sample[j] as SharedViews.PlayerProfile,
+				sample[i] as SharedViews.PlayerProfile,
+			];
+		}
+		return sample.slice(0, limit);
+	}
+
+	/** Forgets the cached showcase pool (tests, or after moderation that should apply at once). */
+	static clearShowcasePool() {
+		this.showcasePool = null;
+	}
+
+	/**
+	 * Random players who wear something. Players who used the client within the last 30 days come
+	 * first; banned users and items that can't show are filtered out like in every public profile.
+	 */
+	protected static async loadShowcasePool(tx: DrizzleDB) {
+		const limit = this.SHOWCASE_POOL_SIZE;
 		const accounts = DB.Tables.minecraftAccounts;
 		const recentSince = Date.now() - MinecraftAccountHandler.USES_CLIENT_WINDOW_MS;
 
@@ -258,7 +297,7 @@ export class LoadoutHandler {
 			.from(accounts)
 			.where(and(isNotNull(accounts.user_id), wearsSomething))
 			.orderBy(desc(sql`coalesce(${accounts.last_seen_at}, 0) > ${recentSince}`), sql`random()`)
-			.limit(limit * 4)
+			.limit(limit * 2)
 			.all();
 
 		const profiles = await this.getProfiles(candidates, tx);

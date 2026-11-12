@@ -69,7 +69,9 @@ export class WardrobeHandler {
 		if (query.search) conditions.push(like(products.name, `%${query.search}%`));
 
 		const ownedExclusive = sql<number>`(${products.availability} = 'exclusive' and ${DB.Tables.userItems.user_id} is not null)`;
-		const addedAt = sql<number>`coalesce(${DB.Tables.userItems.created_at}, ${DB.Tables.wardrobeItems.created_at})`;
+		// Exclusives: when they were received; free products: when they were saved (a free product
+		// can still have an ownership row from when it was exclusive).
+		const addedAt = sql<number>`case when ${ownedExclusive} then ${DB.Tables.userItems.created_at} else ${DB.Tables.wardrobeItems.created_at} end`;
 
 		const rows = await tx
 			.select({
